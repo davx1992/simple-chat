@@ -1,0 +1,22 @@
+{
+    "name": "simple-chat",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc --build",
+        "clean": "tsc --build --clean"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.17.1",
+        "inversify": "^5.0.5",
+        "reflect-metadata": "^0.1.13",
+        "socket.io": "^3.1.0"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.11",
+        "@types/node": "^14.14.22"
+    }
+}

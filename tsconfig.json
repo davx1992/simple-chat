@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": ["es6"],
+        "types": ["reflect-metadata", "node", "express"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "emitDecoratorMetadata": true,
+        "noImplicitAny": false,
+        "noEmitOnError": true,
+        "removeComments": false,
+        "sourceMap": true,
+        "outDir": "./dist",
+        "allowSyntheticDefaultImports": true
+    },
+    "exclude": ["node_modules", "dist"]
+}
