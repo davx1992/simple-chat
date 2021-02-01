@@ -32,19 +32,20 @@ var express_1 = __importDefault(require("express"));
 var http = __importStar(require("http"));
 var socket_io_1 = require("socket.io");
 var inversify_1 = require("inversify");
-var App = /** @class */ (function () {
-    function App() {
+var logger_1 = require("../constants/logger");
+var AppService = /** @class */ (function () {
+    function AppService() {
     }
-    App.prototype.init = function () {
+    AppService.prototype.init = function () {
         var app = express_1.default();
         var server = http.createServer(app);
         this._io = new socket_io_1.Server(server);
-        console.log("Init");
+        logger_1.logger.info("Starting Simple Chat server");
     };
-    App = __decorate([
+    AppService = __decorate([
         inversify_1.injectable()
-    ], App);
-    return App;
+    ], AppService);
+    return AppService;
 }());
-exports.default = App;
+exports.default = AppService;
 //# sourceMappingURL=app.js.map
