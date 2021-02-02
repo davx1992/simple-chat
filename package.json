@@ -15,6 +15,7 @@
         "express": "^4.17.1",
         "inversify": "^5.0.5",
         "reflect-metadata": "^0.1.13",
+        "rethinkdb-ts": "^2.4.8",
         "socket.io": "^3.1.0",
         "winston": "^3.3.3"
     },

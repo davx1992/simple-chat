@@ -13,11 +13,23 @@ export default class AuthenticationService implements Authentication {
         this.authMiddleware = this.authMiddleware.bind(this);
     }
 
+    /**
+     * Add middleware to Socket.IO
+     *
+     * @param io Server instance
+     * @param url url of external authentication server
+     */
     addMidleware(io: Server, url: string): void {
         io.use(this.authMiddleware);
         this._url = url;
     }
 
+    /**
+     * Middleware which you can pass to Socket.IO
+     *
+     * @param socket connection socket instance
+     * @param next next function which you can call
+     */
     async authMiddleware(socket: Socket, next): Promise<void> {
         const token = socket.handshake.auth["token"];
         try {
@@ -33,6 +45,11 @@ export default class AuthenticationService implements Authentication {
         }
     }
 
+    /**
+     * Authenticate in external server
+     *
+     * @param token authentication token
+     */
     authenticate(token: string) {
         return new Promise<boolean>((resolve, reject) => {
             axios

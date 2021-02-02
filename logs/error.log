@@ -1,1 +1,5 @@
 2021-02-01T18:17:20.171Z [SIMPLE_CHAT] [31merror[39m: connect ECONNREFUSED 127.0.0.1:3000
+2021-02-02T18:07:08.053Z [SIMPLE_CHAT] [31merror[39m: Database `simple_chat` does not exist in:
+r.db("simple_chat").tableList().coerceTo("ARRAY")
+^^^^^^^^^^^^^^^^^^^                              
+

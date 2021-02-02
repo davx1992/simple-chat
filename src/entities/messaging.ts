@@ -11,6 +11,11 @@ export default class MessagingService implements Messaging {
     onDisconnect(): void {}
     onMessage(): void {}
 
+    /**
+     * Initiate Socket.Io events
+     *
+     * @param io Server instance
+     */
     initEvents(io: Server): void {
         io.on("connection", this.onConnect);
         io.on("disconnect", this.onDisconnect);
