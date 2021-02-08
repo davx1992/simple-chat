@@ -1,8 +1,7 @@
 import { Connection } from "rethinkdb-ts";
 import { Server } from "socket.io";
+
 export default interface App {
-    _conn: Connection;
-    _io: Server;
     init(config: AppConfig): void;
     initiateDatabase(host: string, port: number, db: string): void;
 }

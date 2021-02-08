@@ -9,12 +9,16 @@ import SERVICE_IDENTIFIER from "../constants/identifiers";
 import Authentication from "../interfaces/authentication.interface";
 import { Connection, r } from "rethinkdb-ts";
 
+//RethinkDB connection instance
+export let conn: Connection;
+
+//Socket.Io server instance
+export let io: Server;
+
 @injectable()
 export default class AppService implements AppInterface {
-    public _io: Server;
     private _messaging: Messaging;
     private _authentication: Authentication;
-    public _conn: Connection;
 
     constructor(
         @inject(SERVICE_IDENTIFIER.MESSAGING) messaging: Messaging,
@@ -37,31 +41,36 @@ export default class AppService implements AppInterface {
         port: number,
         db: string,
     ): Promise<void> {
-        try {
-            this._conn = await r.connect({ host, port, db });
-            let existing = await r
-                .tableList()
-                .coerceTo("ARRAY")
-                .run(this._conn);
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                conn = await r.connect({ host, port, db });
+                let existing = await r.tableList().coerceTo("ARRAY").run(conn);
 
-            let tables = [
-                "chat",
-                "chat_user",
-                "messages",
-                "offline_message",
-                "users",
-            ];
-            tables.map((table) => {
-                if (!existing.includes(table)) {
-                    r.tableCreate(table).run(this._conn);
-                    logger.info(`Created table ${table}`);
-                }
-            });
+                let tables = [
+                    "chat",
+                    "chat_user",
+                    "messages",
+                    "message_event",
+                    "users",
+                ];
 
-            logger.info(`Connected to database ${host}:${port}/${db}`);
-        } catch (error) {
-            logger.error(error);
-        }
+                const tableCreationPromises = tables.map((table) => {
+                    if (!existing.includes(table)) {
+                        r.tableCreate(table).run(conn);
+                        logger.info(`Created table ${table}`);
+                    }
+                });
+
+                Promise.all(tableCreationPromises).then(() => {
+                    resolve();
+                });
+
+                logger.info(`Connected to database ${host}:${port}/${db}`);
+            } catch (error) {
+                logger.error(error);
+                reject(error);
+            }
+        });
     }
 
     /**
@@ -69,7 +78,7 @@ export default class AppService implements AppInterface {
      *
      * @param config server config object
      */
-    init(config: AppConfig): void {
+    async init(config: AppConfig): Promise<void> {
         logger.info("Starting Simple Chat server");
 
         const {
@@ -82,10 +91,10 @@ export default class AppService implements AppInterface {
         const app = express();
         const server = http.createServer(app);
 
-        this.initiateDatabase(db_host, db_port, db_name);
-        this._io = new Server(server);
-        this._messaging.initEvents(this._io);
-        this._authentication.addMidleware(this._io, extAuthenticationUrl);
+        await this.initiateDatabase(db_host, db_port, db_name);
+        io = new Server(server);
+        this._messaging.initEvents();
+        this._authentication.addMidleware(extAuthenticationUrl);
 
         server.listen(port, () => {
             logger.info(`Listening on *:${port}`);

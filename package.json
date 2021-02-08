@@ -12,8 +12,11 @@
     "license": "ISC",
     "dependencies": {
         "axios": "^0.21.1",
+        "class-validator": "^0.13.1",
         "express": "^4.17.1",
         "inversify": "^5.0.5",
+        "lodash": "^4.17.20",
+        "moment": "^2.29.1",
         "reflect-metadata": "^0.1.13",
         "rethinkdb-ts": "^2.4.8",
         "socket.io": "^3.1.0",

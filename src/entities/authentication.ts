@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
-import { Server, Socket } from "socket.io";
+import { Socket } from "socket.io";
 import Authentication from "../interfaces/authentication.interface";
 import axios from "axios";
 import { logger } from "../constants/logger";
+import { io } from "./app";
 
 @injectable()
 export default class AuthenticationService implements Authentication {
@@ -19,7 +20,7 @@ export default class AuthenticationService implements Authentication {
      * @param io Server instance
      * @param url url of external authentication server
      */
-    addMidleware(io: Server, url: string): void {
+    addMidleware(url: string): void {
         io.use(this.authMiddleware);
         this._url = url;
     }
@@ -32,16 +33,22 @@ export default class AuthenticationService implements Authentication {
      */
     async authMiddleware(socket: Socket, next): Promise<void> {
         const token = socket.handshake.auth["token"];
-        try {
-            const verified = await this.authenticate(token);
-            if (verified) {
-                logger.info("Authenticated.");
-                next();
-            } else {
-                next(new Error("Unauthorized."));
+        const userId = socket.handshake.auth["userId"];
+
+        if (token && userId) {
+            try {
+                const verified = await this.authenticate(token);
+                if (verified) {
+                    logger.info("Authenticated.");
+                    next();
+                } else {
+                    next(new Error("Unauthorized."));
+                }
+            } catch (err) {
+                next(new Error("Error during authentication."));
             }
-        } catch (err) {
-            next(new Error("Error during authentication."));
+        } else {
+            next(new Error("Not all details provided."));
         }
     }
 
@@ -65,7 +72,7 @@ export default class AuthenticationService implements Authentication {
                     }
                 })
                 .catch((err) => {
-                    logger.error(err);
+                    logger.error("Error during authentication " + err);
                     reject(err);
                 });
         });
