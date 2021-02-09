@@ -1,13 +1,13 @@
-import AppInterface, { AppConfig } from "../interfaces/app.interface";
+import { AppConfig } from "../interfaces/app.interface";
 import express from "express";
 import * as http from "http";
 import { Server } from "socket.io";
 import { inject, injectable } from "inversify";
 import { logger } from "../constants/logger";
-import Messaging from "../interfaces/messaging.interface";
 import SERVICE_IDENTIFIER from "../constants/identifiers";
-import Authentication from "../interfaces/authentication.interface";
 import { Connection, r } from "rethinkdb-ts";
+import MessagingService from "./messaging/messaging";
+import AuthenticationService from "./authentication";
 
 //RethinkDB connection instance
 export let conn: Connection;
@@ -16,14 +16,14 @@ export let conn: Connection;
 export let io: Server;
 
 @injectable()
-export default class AppService implements AppInterface {
-    private _messaging: Messaging;
-    private _authentication: Authentication;
+export default class AppService {
+    private _messaging: MessagingService;
+    private _authentication: AuthenticationService;
 
     constructor(
-        @inject(SERVICE_IDENTIFIER.MESSAGING) messaging: Messaging,
+        @inject(SERVICE_IDENTIFIER.MESSAGING) messaging: MessagingService,
         @inject(SERVICE_IDENTIFIER.AUTHENTICATION)
-        authentication: Authentication,
+        authentication: AuthenticationService,
     ) {
         this._messaging = messaging;
         this._authentication = authentication;

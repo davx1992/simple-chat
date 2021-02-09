@@ -1,9 +1,7 @@
-import Messaging, {
+import {
     Acknowledgment,
     ChatTypes,
     Message,
-    User,
-    UserState,
     ValidationError,
 } from "../../interfaces/messaging.interface";
 import { Socket } from "socket.io";
@@ -16,9 +14,10 @@ import { r } from "rethinkdb-ts";
 import { validate } from "class-validator";
 import { MessagingOperations } from "./operations";
 import SERVICE_IDENTIFIER from "../../constants/identifiers";
+import { User, UserState } from "../../interfaces/authentication.interface";
 
 @injectable()
-export default class MessagingService implements Messaging {
+export default class MessagingService {
     private _messagingOperations: MessagingOperations;
 
     constructor(
@@ -61,7 +60,7 @@ export default class MessagingService implements Messaging {
             .loadMessageEvents(userId)
             .then((undeliveredMessages) => {
                 undeliveredMessages.map((message) => {
-                    //Send message to receipient
+                    //Send message to just connected user
                     socket.emit("message", message.right);
                 });
             });
@@ -101,7 +100,9 @@ export default class MessagingService implements Messaging {
     /**
      * On disconnect event handler
      */
-    onDisconnect = (): void => {};
+    onDisconnect = (): void => {
+        //TODO: handle disconnect event
+    };
 
     /**
      * Is triggered when client received message and acknowledging that message received

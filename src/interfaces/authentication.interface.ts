@@ -1,7 +1,12 @@
-import { Server, Socket } from "socket.io";
+export interface User {
+    id: string;
+    last_login: string;
+    last_login_timestamp: number;
+    socketId: string;
+    state: UserState;
+}
 
-export default interface Authentication {
-    authenticate(token: string): void;
-    addMidleware(url: string): void;
-    authMiddleware(socket: Socket, next: any): void;
+export enum UserState {
+    ACTIVE = "Active",
+    INACTIVE = "Inactive",
 }

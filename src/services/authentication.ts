@@ -1,12 +1,11 @@
 import { injectable } from "inversify";
 import { Socket } from "socket.io";
-import Authentication from "../interfaces/authentication.interface";
 import axios from "axios";
 import { logger } from "../constants/logger";
 import { io } from "./app";
 
 @injectable()
-export default class AuthenticationService implements Authentication {
+export default class AuthenticationService {
     private _url: string;
 
     constructor() {

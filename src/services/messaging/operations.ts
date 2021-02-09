@@ -3,7 +3,6 @@ import {
     ChatTypes,
     Message,
     MessageEvent,
-    User,
 } from "../../interfaces/messaging.interface";
 import { now } from "lodash";
 import moment from "moment";
@@ -11,6 +10,7 @@ import { injectable } from "inversify";
 import { logger } from "../../constants/logger";
 import { conn } from "../app";
 import { JoinResult, r } from "rethinkdb-ts";
+import { User } from "../../interfaces/authentication.interface";
 
 @injectable()
 export class MessagingOperations {
