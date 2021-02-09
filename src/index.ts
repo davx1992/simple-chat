@@ -1,8 +1,8 @@
 import SERVICE_IDENTIFIER from "./constants/identifiers";
 import container from "./container";
-import AppInterface from "./interfaces/app.interface";
+import AppService from "./services/app";
 
-let app = container.get<AppInterface>(SERVICE_IDENTIFIER.APP);
+let app = container.get<AppService>(SERVICE_IDENTIFIER.APP);
 
 app.init({
     port: 3333,

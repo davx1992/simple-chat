@@ -17,7 +17,6 @@ export interface ValidationError {
 
 export class Message {
     id?: string;
-    @Contains("@")
     @IsString()
     to: string;
     @IsNumber()
@@ -43,4 +42,14 @@ export interface Chat {
     timestamp: number;
     created: string;
     users?: string[];
+    type: ChatTypes;
+}
+
+export interface ChatUser {
+    chat_id: string;
+    timestamp: number;
+    created: string;
+    user_id: string;
+    id: string;
+    temp: boolean;
 }

@@ -64,3 +64,26 @@ r.db("simple_chat").table("user").get("53b21376-2c22-4732-8b09-ddf5e65b8178")
 2021-02-08T15:14:31.019Z [SIMPLE_CHAT] [31merror[39m: {"field":"to","error":"Sender and receipient is same user."}
 2021-02-08T16:18:37.767Z [SIMPLE_CHAT] [31merror[39m: {"field":"to","error":"Sender and receipient is same user."}
 2021-02-08T16:18:39.256Z [SIMPLE_CHAT] [31merror[39m: {"field":"to","error":"Sender and receipient is same user."}
+2021-02-09T09:02:24.100Z [SIMPLE_CHAT] [31merror[39m: []
+2021-02-09T09:04:44.277Z [SIMPLE_CHAT] [31merror[39m: {"field":"to","error":"Chat do not exists, please create new chat."}
+2021-02-09T09:37:04.685Z [SIMPLE_CHAT] [31merror[39m: User list should contain creator and receipient
+2021-02-09T09:41:40.886Z [SIMPLE_CHAT] [31merror[39m: User list should contain creator and receipient
+2021-02-09T09:45:12.147Z [SIMPLE_CHAT] [31merror[39m: User list should contain creator and receipient
+2021-02-09T13:17:34.515Z [SIMPLE_CHAT] [31merror[39m: Cannot use r.row in nested queries.  Use functions instead in:
+r.db("simple_chat").table("chat_user").filter(r.row("chat_id").eq("7dfbde74-a1bf-4299-9a80-9e7d917e51ea")
+    .and(r.row("user_id").ne("5a8521de-e9b1-479d-bab5-3cb62ebd781e"))).eqJoin("user_id", r
+         ^^^^^                                                                            
+    .db("simple_chat").table("users"))
+
+2021-02-09T13:21:01.450Z [SIMPLE_CHAT] [31merror[39m: Cannot use r.row in nested queries.  Use functions instead in:
+r.db("simple_chat").table("chat_user").filter(r.row("chat_id").eq("7dfbde74-a1bf-4299-9a80-9e7d917e51ea")
+    .and(r.row("user_id").ne("5a8521de-e9b1-479d-bab5-3cb62ebd781e")))
+         ^^^^^                                                        
+
+2021-02-09T15:37:22.119Z [SIMPLE_CHAT] [31merror[39m: Table `simple_chat.user_chat` does not exist in:
+r.db("simple_chat").table("user_chat").filter({
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^         
+    userId: "5a8521de-e9b1-479d-bab5-3cb62ebd781e",
+    temp: true
+}).delete()
+
