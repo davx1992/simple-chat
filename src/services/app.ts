@@ -52,6 +52,7 @@ export default class AppService {
                     "messages",
                     "message_event",
                     "users",
+                    "connections",
                 ];
 
                 const tableCreationPromises = tables.map((table) => {

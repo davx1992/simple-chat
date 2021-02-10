@@ -1,4 +1,11 @@
-import { Contains, IsNumber, IsString, ValidateNested } from "class-validator";
+import {
+    Contains,
+    IsBoolean,
+    IsNumber,
+    IsString,
+    ValidateIf,
+    ValidateNested,
+} from "class-validator";
 
 export enum ChatTypes {
     SUC = "@suc",
@@ -17,12 +24,28 @@ export interface ValidationError {
 
 export class Message {
     id?: string;
+
     @IsString()
     to: string;
+
     @IsNumber()
     timestamp: number;
+
+    @ValidateIf(
+        (o) =>
+            typeof o.typing === "undefined" ||
+            (typeof o.typing !== "undefined" && typeof o.body !== "undefined"),
+    )
     @ValidateNested()
-    body: MessageBody;
+    body?: MessageBody;
+
+    @ValidateIf(
+        (o) =>
+            typeof o.body === "undefined" ||
+            (typeof o.typing !== "undefined" && typeof o.body !== "undefined"),
+    )
+    @IsBoolean()
+    typing?: boolean;
 }
 
 export interface MessageEvent {
@@ -31,10 +54,6 @@ export interface MessageEvent {
     to: string;
     timestamp: number;
     created: string;
-}
-
-export interface Acknowledgment {
-    messageId: string;
 }
 
 export interface Chat {

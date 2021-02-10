@@ -1,5 +1,4 @@
 import {
-    Acknowledgment,
     ChatTypes,
     Message,
     ValidationError,
@@ -34,25 +33,13 @@ export default class MessagingService {
      */
     onConnect = (socket: Socket): void => {
         const userId = socket.handshake.auth["userId"];
-        r.table("users")
-            .insert(
-                {
-                    id: userId,
-                    last_login_timestamp: now(),
-                    last_login: moment.utc().toDate(),
-                    state: UserState.ACTIVE,
-                    socketId: socket.id,
-                },
-                { conflict: "update" },
-            )
-            .run(conn);
-
+        this._messagingOperations.saveUser(userId, socket.id);
+        //TODO: Think how to handle different sessions if multiple connections
         logger.info("Connected " + socket.id + " " + userId);
 
         //Socket event initialization
         socket.on("message", this.onMessage.bind(null, socket));
         socket.on("create_chat", this.onCreateChat.bind(null, socket));
-        socket.on("acknowledgment", this.onAcknowledgment.bind(null, socket));
         socket.on("get_users", this.onGetUsers.bind(null, socket));
         socket.on("get_chats", this.onGetChats.bind(null, socket));
         socket.on("join_chat", this.onJoinChat.bind(null, socket));
@@ -65,7 +52,23 @@ export default class MessagingService {
             .then((undeliveredMessages) => {
                 undeliveredMessages.map((message) => {
                     //Send message to just connected user
-                    socket.emit("message", message.right);
+                    socket.emit(
+                        "message",
+                        message.right,
+                        this.withTimeout(
+                            () => {
+                                //Delete message event if message received by client
+                                this._messagingOperations.deleteAcknowledgedMessageEvent(
+                                    message.right.id,
+                                    userId,
+                                );
+                            },
+                            () => {
+                                logger.error("timeout on message " + userId);
+                            },
+                            2000,
+                        ),
+                    );
                 });
             });
     };
@@ -83,12 +86,20 @@ export default class MessagingService {
         callback: (chats) => [],
     ): Promise<void> => {
         const userId = socket.handshake.auth["userId"];
-        const chats = await r
+        const chatsMuc = await r
+            .table("chat")
+            .filter({ type: ChatTypes.MUC })
+            .run(conn);
+
+        const chatsSUC = await r
             .table("chat_user")
             .filter({ user_id: userId })
             .eqJoin("chat_id", r.table("chat"))
             .zip()
+            .filter((chat) => chat("type").ne(ChatTypes.MUC))
             .run(conn);
+
+        const chats = [...chatsMuc, ...chatsSUC];
         callback(chats);
     };
 
@@ -225,22 +236,31 @@ export default class MessagingService {
     };
 
     /**
-     * Is triggered when client received message and acknowledging that message received
+     * This function will return function which will be called if message
+     * was received by client, otherwise timeout will be thrown
      *
-     * @param socket connection socket instance
-     * @param acknowledgment acknowledgment message
+     * @param onSuccess when client received message, this function will be called
+     * @param onTimeout when client do not reply within timeout, this function will be called
+     * @param timeout timeout how much time to wait for acknowledgment in miliseconds
      */
-    onAcknowledgment = async (
-        socket: Socket,
-        acknowledgment: Acknowledgment,
-    ): Promise<void> => {
-        const from = socket.handshake.auth["userId"];
-        const { messageId } = acknowledgment;
+    withTimeout = (onSuccess, onTimeout, timeout) => {
+        let called = false;
 
-        this._messagingOperations.deleteAcknowledgedMessageEvent(
-            messageId,
-            from,
-        );
+        const timer = setTimeout(() => {
+            //If after timeout callback is not yet called, then throw timeout
+            if (called) return;
+            called = true;
+            onTimeout();
+        }, timeout);
+
+        return (...args) => {
+            //If callback called then set called true
+            if (called) return;
+            called = true;
+            clearTimeout(timer);
+            //Apply passed argument to success function
+            onSuccess.apply(null, args);
+        };
     };
 
     /**
@@ -294,7 +314,7 @@ export default class MessagingService {
         //If Chat is Single User
         if (chat.type === ChatTypes.SUC) {
             const receipientId = chat.users.find((user) => user !== from);
-            const receipient = await this._messagingOperations.loadChatUser(
+            const receipient = await this._messagingOperations.loadUser(
                 receipientId,
             );
 
@@ -308,6 +328,7 @@ export default class MessagingService {
             users.map((user) => {
                 if (user.right.id !== from) {
                     receipients.push(user.right);
+                    //If user joined chat temporary then add him permanently
                 } else if (user.left.temp) {
                     this._messagingOperations.joinChatPermanently(
                         chat.id,
@@ -317,26 +338,89 @@ export default class MessagingService {
             });
         }
 
-        //Save message to database
-        const savedMessage = await this._messagingOperations.saveMessage(
-            message,
-            from,
-            chat.id,
-        );
+        let messageToSend: Message;
+        let onlyTyping: boolean = false;
+
+        //Delete typing before saving or do not save if only typing
+        if (
+            typeof messageDto.typing !== "undefined" &&
+            typeof messageDto.body !== "undefined"
+        ) {
+            //Copy message and then delete typing before saving
+            const copy = { ...messageDto };
+            delete copy.typing;
+            //Save message to database
+            const savedMessage = await this._messagingOperations.saveMessage(
+                copy,
+                from,
+                chat.id,
+            );
+
+            messageToSend = { ...messageDto, id: savedMessage.id };
+        } else if (typeof messageDto.typing !== "undefined") {
+            //If only typing do not save message but send it to participants
+            messageToSend = messageDto;
+            onlyTyping = true;
+        } else {
+            //Save message to database if standard message
+            messageToSend = await this._messagingOperations.saveMessage(
+                messageDto,
+                from,
+                chat.id,
+            );
+        }
 
         //Send message to receipient one by one in loop
         receipients.map((receipient) => {
-            //Save message event in database
-            this._messagingOperations.saveMessageEvent(
-                savedMessage,
-                receipient.id,
-            );
-            //Send message to receipient
-            socket.to(receipient.socketId).emit("message", savedMessage);
+            if (receipient.state === UserState.ACTIVE) {
+                //Send message to receipient
+                io.of("/")
+                    .sockets.get(receipient.socketId)
+                    ?.emit(
+                        "message",
+                        messageToSend,
+                        this.withTimeout(
+                            () => {},
+                            () => {
+                                if (!onlyTyping) {
+                                    this.handleOfflineMessage(
+                                        messageToSend,
+                                        receipient,
+                                        from,
+                                    );
+                                }
+                            },
+                            2000,
+                        ),
+                    );
+            } else {
+                if (!onlyTyping) {
+                    this.handleOfflineMessage(messageToSend, receipient, from);
+                }
+            }
         });
 
-        //Send saved message id back to client
-        callback(savedMessage.id);
+        //Send saved message id back to client, if message is only typing then just run callback with no params
+        onlyTyping ? callback() : callback(messageToSend.id);
+    };
+
+    /**
+     * Handle message when receipient is offline
+     *
+     * @param message message object
+     * @param receipient message receipient
+     * @param from message sender id
+     */
+    handleOfflineMessage = async (
+        message: Message,
+        receipient: User,
+        from: string,
+    ): Promise<void> => {
+        //Handle case when timeout reached
+        //Save message event in database, so this message will be sent when connected
+        this._messagingOperations.saveMessageEvent(message, receipient.id);
+        logger.info("User inactive " + from);
+        //TODO: send offline notification
     };
 
     /**

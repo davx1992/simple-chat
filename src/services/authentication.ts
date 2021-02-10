@@ -1,14 +1,20 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { Socket } from "socket.io";
 import axios from "axios";
 import { logger } from "../constants/logger";
 import { io } from "./app";
+import { MessagingOperations } from "./messaging/operations";
+import SERVICE_IDENTIFIER from "../constants/identifiers";
 
 @injectable()
 export default class AuthenticationService {
     private _url: string;
+    private _messagingOperations: MessagingOperations;
 
-    constructor() {
+    constructor(
+        @inject(SERVICE_IDENTIFIER.MESSAGING_OPERATIONS)
+        messagingOperations: MessagingOperations,
+    ) {
         this.authenticate = this.authenticate.bind(this);
         this.authMiddleware = this.authMiddleware.bind(this);
     }

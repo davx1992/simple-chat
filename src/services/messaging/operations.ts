@@ -99,7 +99,7 @@ export class MessagingOperations {
      *
      * @param userId user id to load
      */
-    loadChatUser = (userId: string): Promise<User> => {
+    loadUser = (userId: string): Promise<User> => {
         return new Promise<User>(async (resolve, reject) => {
             try {
                 const user = await r.table("users").get(userId).run(conn);
@@ -199,7 +199,7 @@ export class MessagingOperations {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const alreadyJoined = await r
-                    .table("message_event")
+                    .table("chat_user")
                     .filter({
                         chat_id: chatId,
                         user_id: userId,
@@ -406,6 +406,35 @@ export class MessagingOperations {
                     .table("users")
                     .get(userId)
                     .update({ state: UserState.INACTIVE })
+                    .run(conn);
+                resolve();
+            } catch (err) {
+                logger.error(err);
+                reject(err);
+            }
+        });
+    };
+
+    /**
+     * Save user in database with socket id
+     *
+     * @param userId user id which to save - this will be primary key
+     * @param socketId socket id of connection of user
+     */
+    saveUser = (userId: string, socketId: string): Promise<void> => {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                r.table("users")
+                    .insert(
+                        {
+                            id: userId,
+                            last_login_timestamp: now(),
+                            last_login: moment.utc().toDate(),
+                            state: UserState.ACTIVE,
+                            socketId: socketId,
+                        },
+                        { conflict: "update" },
+                    )
                     .run(conn);
                 resolve();
             } catch (err) {
