@@ -136,7 +136,9 @@ export class MessagingOperations {
                                 return user("chat_id").eq(chatId);
                             }
                         })
-                        .eqJoin("user_id", r.table("users"))
+                        .eqJoin("user_id", r.table("connections"), {
+                            index: "user_id",
+                        })
                         .run(conn);
                     resolve(users);
                 } catch (err) {
@@ -419,9 +421,8 @@ export class MessagingOperations {
      * Save user in database with socket id
      *
      * @param userId user id which to save - this will be primary key
-     * @param socketId socket id of connection of user
      */
-    saveUser = (userId: string, socketId: string): Promise<void> => {
+    saveUser = (userId: string): Promise<void> => {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 r.table("users")
@@ -431,11 +432,53 @@ export class MessagingOperations {
                             last_login_timestamp: now(),
                             last_login: moment.utc().toDate(),
                             state: UserState.ACTIVE,
-                            socketId: socketId,
                         },
                         { conflict: "update" },
                     )
                     .run(conn);
+                resolve();
+            } catch (err) {
+                logger.error(err);
+                reject(err);
+            }
+        });
+    };
+
+    /**
+     * Save connection in database with socket id
+     *
+     * @param userId user id which to save - this will be primary key
+     * @param socketId socket id of connection of user
+     */
+    saveConnection = (userId: string, socketId: string): Promise<void> => {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                await r
+                    .table("connections")
+                    .insert({
+                        id: socketId,
+                        timestamp: now(),
+                        created: moment.utc().toDate(),
+                        user_id: userId,
+                    })
+                    .run(conn);
+                resolve();
+            } catch (err) {
+                logger.error(err);
+                reject(err);
+            }
+        });
+    };
+
+    /**
+     * Delete conenction record from database
+     *
+     * @param socketId socket id which to delete
+     */
+    deleteConnection = (socketId: string): Promise<void> => {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                await r.table("connections").get(socketId).delete().run(conn);
                 resolve();
             } catch (err) {
                 logger.error(err);

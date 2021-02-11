@@ -6,8 +6,6 @@ import {
 import { Socket } from "socket.io";
 import { logger } from "../../constants/logger";
 import { inject, injectable } from "inversify";
-import { now } from "lodash";
-import moment from "moment";
 import { conn, io } from "../app";
 import { r } from "rethinkdb-ts";
 import { validate } from "class-validator";
@@ -33,7 +31,10 @@ export default class MessagingService {
      */
     onConnect = (socket: Socket): void => {
         const userId = socket.handshake.auth["userId"];
-        this._messagingOperations.saveUser(userId, socket.id);
+
+        this._messagingOperations.saveUser(userId);
+        this._messagingOperations.saveConnection(userId, socket.id);
+
         //TODO: Think how to handle different sessions if multiple connections
         logger.info("Connected " + socket.id + " " + userId);
 
@@ -113,6 +114,7 @@ export default class MessagingService {
 
         this._messagingOperations.updateUserInactive(userId);
         this._messagingOperations.deleteTempJoins(userId);
+        this._messagingOperations.deleteConnection(socket.id);
 
         logger.info("Disconnected " + userId);
     };
@@ -258,7 +260,7 @@ export default class MessagingService {
             if (called) return;
             called = true;
             clearTimeout(timer);
-            //Apply passed argument to success function
+            //Apply passed argument to success functio
             onSuccess.apply(null, args);
         };
     };
@@ -323,6 +325,7 @@ export default class MessagingService {
             //If chat is Multi user chat
         } else {
             const users = await this._messagingOperations.loadMUCUsers(chat.id);
+            console.log(users);
 
             //Get user list
             users.map((user) => {
@@ -375,7 +378,7 @@ export default class MessagingService {
             if (receipient.state === UserState.ACTIVE) {
                 //Send message to receipient
                 io.of("/")
-                    .sockets.get(receipient.socketId)
+                    .sockets.get(receipient.socket_id)
                     ?.emit(
                         "message",
                         messageToSend,

@@ -9,12 +9,8 @@ import SERVICE_IDENTIFIER from "../constants/identifiers";
 @injectable()
 export default class AuthenticationService {
     private _url: string;
-    private _messagingOperations: MessagingOperations;
 
-    constructor(
-        @inject(SERVICE_IDENTIFIER.MESSAGING_OPERATIONS)
-        messagingOperations: MessagingOperations,
-    ) {
+    constructor() {
         this.authenticate = this.authenticate.bind(this);
         this.authMiddleware = this.authMiddleware.bind(this);
     }

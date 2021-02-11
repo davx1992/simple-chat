@@ -1,5 +1,4 @@
 import { AppConfig } from "../interfaces/app.interface";
-import express from "express";
 import * as http from "http";
 import { Server } from "socket.io";
 import { inject, injectable } from "inversify";
@@ -8,6 +7,13 @@ import SERVICE_IDENTIFIER from "../constants/identifiers";
 import { Connection, r } from "rethinkdb-ts";
 import MessagingService from "./messaging/messaging";
 import AuthenticationService from "./authentication";
+import { InversifyExpressServer, getRouteInfo } from "inversify-express-utils";
+import container from "../container";
+import * as bodyParser from "body-parser";
+import * as prettyjson from "prettyjson";
+
+//Import controllers
+import "../controllers/api.controller";
 
 //RethinkDB connection instance
 export let conn: Connection;
@@ -55,9 +61,20 @@ export default class AppService {
                     "connections",
                 ];
 
-                const tableCreationPromises = tables.map((table) => {
+                const indexes = {
+                    connections: ["user_id"],
+                };
+
+                const tableCreationPromises = tables.map(async (table) => {
                     if (!existing.includes(table)) {
-                        r.tableCreate(table).run(conn);
+                        await r.tableCreate(table).run(conn);
+
+                        indexes[table]?.map(async (index) => {
+                            await r.table(table).indexCreate(index).run(conn);
+                            logger.info(
+                                `Index ${index} created on table ${table}`,
+                            );
+                        });
                         logger.info(`Created table ${table}`);
                     }
                 });
@@ -65,6 +82,9 @@ export default class AppService {
                 Promise.all(tableCreationPromises).then(() => {
                     resolve();
                 });
+
+                //Clear all open connections as on restart all connections are closed, and client will reconnect
+                await r.table("connections").delete().run(conn);
 
                 logger.info(`Connected to database ${host}:${port}/${db}`);
             } catch (error) {
@@ -89,7 +109,20 @@ export default class AppService {
             db_host,
             db_name,
         } = config;
-        const app = express();
+
+        const inversifyExpressServer = new InversifyExpressServer(container);
+        inversifyExpressServer.setConfig((app) => {
+            // add body parser
+            app.use(
+                bodyParser.urlencoded({
+                    extended: true,
+                }),
+            );
+            app.use(bodyParser.json());
+        });
+
+        let app = inversifyExpressServer.build();
+
         const server = http.createServer(app);
 
         await this.initiateDatabase(db_host, db_port, db_name);
@@ -97,6 +130,9 @@ export default class AppService {
         this._messaging.initEvents();
         this._authentication.addMidleware(extAuthenticationUrl);
 
+        const routeInfo = getRouteInfo(container);
+
+        logger.info(prettyjson.render({ routes: routeInfo }));
         server.listen(port, () => {
             logger.info(`Listening on *:${port}`);
         });
