@@ -46,6 +46,9 @@ export class Message {
     )
     @IsBoolean()
     typing?: boolean;
+
+    //Is used when sending to receipient
+    from?: string;
 }
 
 export interface MessageEvent {

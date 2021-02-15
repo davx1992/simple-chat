@@ -3,8 +3,6 @@ import { Socket } from "socket.io";
 import axios from "axios";
 import { logger } from "../constants/logger";
 import { io } from "./app";
-import { MessagingOperations } from "./messaging/operations";
-import SERVICE_IDENTIFIER from "../constants/identifiers";
 
 @injectable()
 export default class AuthenticationService {

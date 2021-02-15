@@ -122,11 +122,10 @@ export default class AppService {
         });
 
         let app = inversifyExpressServer.build();
-
         const server = http.createServer(app);
-
         await this.initiateDatabase(db_host, db_port, db_name);
         io = new Server(server);
+
         this._messaging.initEvents();
         this._authentication.addMidleware(extAuthenticationUrl);
 

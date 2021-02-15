@@ -5,6 +5,7 @@ import AppService from "./services/app";
 import MessagingService from "./services/messaging/messaging";
 import AuthenticationService from "./services/authentication";
 import { MessagingOperations } from "./services/messaging/operations";
+import { Interfaces, TYPE } from "inversify-socket-utils";
 
 let container = new Container();
 
