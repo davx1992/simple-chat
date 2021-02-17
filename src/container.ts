@@ -6,10 +6,12 @@ import MessagingService from "./services/messaging/messaging";
 import AuthenticationService from "./services/authentication";
 import { MessagingOperations } from "./services/messaging/operations";
 import { Interfaces, TYPE } from "inversify-socket-utils";
+import { ApiService } from "./services/api";
 
 let container = new Container();
 
 container.bind<AppService>(SERVICE_IDENTIFIER.APP).to(AppService);
+container.bind<ApiService>(SERVICE_IDENTIFIER.API).to(ApiService);
 container
     .bind<MessagingService>(SERVICE_IDENTIFIER.MESSAGING)
     .to(MessagingService);

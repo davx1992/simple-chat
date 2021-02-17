@@ -114,3 +114,32 @@ r.db("simple_chat").table("user_chat").filter({
 2021-02-10T11:48:54.980Z [SIMPLE_CHAT] [31merror[39m: timeout on message 5a8521de-e9b1-479d-bab5-3cb62ebd781e
 2021-02-10T11:48:58.511Z [SIMPLE_CHAT] [31merror[39m: timeout on message 5a8521de-e9b1-479d-bab5-3cb62ebd781e
 2021-02-10T11:48:58.512Z [SIMPLE_CHAT] [31merror[39m: timeout on message 5a8521de-e9b1-479d-bab5-3cb62ebd781e
+2021-02-16T08:58:23.976Z [SIMPLE_CHAT] [31merror[39m: connect ECONNREFUSED 127.0.0.1:28015
+2021-02-16T13:40:41.012Z [SIMPLE_CHAT] [31merror[39m: Cannot read property '0' of undefined
+2021-02-16T17:28:24.970Z [SIMPLE_CHAT] [31merror[39m: connect ECONNREFUSED 127.0.0.1:28015
+2021-02-17T17:14:49.131Z [SIMPLE_CHAT] [31merror[39m: Table `simple_chat.user` does not exist in:
+r.db("simple_chat").table("chat_user").filter({
+    chatId: "e4932392-ad20-401f-b931-0a91b1a00533"
+}).eqJoin("user_id", r.db("simple_chat").table("connections"), {
+    index: "user_id"
+}).zip().eqJoin("user_id", r.db("simple_chat").table("user"))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+2021-02-17T17:30:27.200Z [SIMPLE_CHAT] [31merror[39m: Expected type SEQUENCE but found SINGLE_SELECTION:
+{
+	"id":	"80a2f306-9c06-4ebb-8d7d-b1c1c171fa75",
+	"last_login":	{
+		"$reql_type$":	"TIME",
+		"epoch_time":	1613583024.729,
+		"timezone":	"+00:00"
+	},
+	"last_login_timestamp":	1613583024728,
+	"state":	"Active"
+} in:
+r.db("simple_chat").table("users").get("80a2f306-9c06-4ebb-8d7d-b1c1c171fa75").eqJoin("id", r
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^               
+    .db("simple_chat").table("connections")).zip()
+
+2021-02-17T18:05:03.052Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-17T18:06:26.723Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-17T18:06:26.724Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
