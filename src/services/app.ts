@@ -63,6 +63,7 @@ export default class AppService {
 
         const indexes = {
           connections: ["user_id"],
+          messages: ["timestamp", "to", ["to", "timestamp"]],
         };
 
         const tableCreationPromises = tables.map(async (table) => {
@@ -70,7 +71,20 @@ export default class AppService {
             await r.tableCreate(table).run(conn);
 
             indexes[table]?.map(async (index) => {
-              await r.table(table).indexCreate(index).run(conn);
+              //If is array then it is compound index
+              if (Array.isArray(index)) {
+                await r
+                  .table(table)
+                  .indexCreate(index.join("_"), [
+                    r.row("to"),
+                    r.row("timestamp"),
+                  ])
+                  .run(conn);
+                console.log(index.join("_"));
+              } else {
+                await r.table(table).indexCreate(index).run(conn);
+              }
+
               logger.info(`Index ${index} created on table ${table}`);
             });
             logger.info(`Created table ${table}`);

@@ -42,11 +42,12 @@ export default class MessagingService {
     //Socket event initialization
     socket.on("message", this.onMessage.bind(null, socket));
     socket.on("create_chat", this.onCreateChat.bind(null, socket));
-    socket.on("get_users", this.onGetUsers.bind(null, socket));
-    socket.on("get_chats", this.onGetChats.bind(null, socket));
+    // socket.on("get_users", this.onGetUsers.bind(null, socket));
+    // socket.on("get_chats", this.onGetChats.bind(null, socket));
     socket.on("join_chat", this.onJoinChat.bind(null, socket));
     socket.on("leave_chat", this.onLeaveChat.bind(null, socket));
     socket.on("disconnect", this.onDisconnect.bind(null, socket));
+    socket.on("load_archive", this.onLoadArchive.bind(null, socket));
 
     //Send undelivered messages
     this._messagingOperations
@@ -75,34 +76,50 @@ export default class MessagingService {
       });
   };
 
-  onGetUsers = async (
+  // onGetChats = async (
+  //   socket: Socket,
+  //   callback: (chats) => []
+  // ): Promise<void> => {
+  //   const userId = socket.handshake.auth["userId"];
+  //   const chatsMuc = await r
+  //     .table("chat")
+  //     .filter({ type: ChatTypes.MUC })
+  //     .run(conn);
+
+  //   const chatsSUC = await r
+  //     .table("chat_user")
+  //     .filter({ user_id: userId })
+  //     .eqJoin("chat_id", r.table("chat"))
+  //     .zip()
+  //     .filter((chat) => chat("type").ne(ChatTypes.MUC))
+  //     .run(conn);
+
+  //   const chats = [...chatsMuc, ...chatsSUC];
+  //   callback(chats);
+  // };
+
+  /**
+   *
+   * @param socket connection socket instance
+   * @param callback callback function to provide messages to client
+   */
+  onLoadArchive = async (
     socket: Socket,
-    callback: (users) => []
-  ): Promise<void> => {
-    const users = await r.table("users").run(conn);
-    callback(users);
-  };
-
-  onGetChats = async (
-    socket: Socket,
-    callback: (chats) => []
-  ): Promise<void> => {
-    const userId = socket.handshake.auth["userId"];
-    const chatsMuc = await r
-      .table("chat")
-      .filter({ type: ChatTypes.MUC })
-      .run(conn);
-
-    const chatsSUC = await r
-      .table("chat_user")
-      .filter({ user_id: userId })
-      .eqJoin("chat_id", r.table("chat"))
-      .zip()
-      .filter((chat) => chat("type").ne(ChatTypes.MUC))
-      .run(conn);
-
-    const chats = [...chatsMuc, ...chatsSUC];
-    callback(chats);
+    chatId: string,
+    limit: number,
+    after: string = null,
+    callback: (messages?: Message[], error?: string) => void
+  ) => {
+    if (chatId && limit) {
+      const messages = await this._messagingOperations.loadArchive(
+        limit,
+        chatId,
+        after
+      );
+      callback(messages);
+    } else {
+      callback(null, "No chat Id or limit promvided.");
+    }
   };
 
   /**
@@ -288,7 +305,6 @@ export default class MessagingService {
 
     const from: string = socket.handshake.auth["userId"];
     const chat = await this._messagingOperations.loadChatById(messageDto.to);
-    console.log(from);
 
     //If chat do not exist then throw an error. Chat should exist when sending message
     if (!chat) {
@@ -371,8 +387,6 @@ export default class MessagingService {
         chat.id
       );
     }
-
-    console.log(receipients);
 
     //Send message to receipient one by one in loop
     receipients.map((receipient) => {

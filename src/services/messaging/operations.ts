@@ -26,7 +26,7 @@ export class MessagingOperations {
   saveMessage = (
     message: Message,
     from: string,
-    receipient: string
+    chatId: string
   ): Promise<Message> => {
     return new Promise<Message>(async (resolve, reject) => {
       try {
@@ -37,8 +37,7 @@ export class MessagingOperations {
             {
               body,
               from: from,
-              to: receipient,
-              chat_type: "@" + message.to.split("@")[1],
+              to: chatId,
               timestamp,
               created: moment.utc().toDate(),
             },
@@ -207,6 +206,49 @@ export class MessagingOperations {
         resolve(createdChat.id);
       } catch (err) {
         logger.error(err);
+        reject(err);
+      }
+    });
+  };
+
+  /**
+   * Fetch message archive for chat. If @param after not provided will be fetched only last messages
+   * If param provided then messages will be loaded which are having timestamp before specific message id
+   *
+   * @param limit how many records to return
+   * @param chatId id of the chat from which fetch archive
+   * @param after after which message id to fetch archive
+   */
+  loadArchive = (
+    limit: number,
+    chatId: string,
+    after?: string
+  ): Promise<Message[]> => {
+    return new Promise<Message[]>(async (resolve, reject) => {
+      try {
+        if (after) {
+          const messages = await r
+            .table("messages")
+            .between(
+              [chatId, r.minval],
+              [chatId, r.table("messages").get(after)("timestamp")],
+              { index: "to_timestamp" }
+            )
+            .orderBy({ index: r.desc("to_timestamp") })
+            .limit(limit)
+            .run(conn);
+          resolve(messages);
+        } else {
+          const messages = await r
+            .table("messages")
+            .orderBy({ index: r.desc("timestamp") })
+            .filter({ to: chatId })
+            .limit(limit)
+            .run(conn);
+
+          resolve(messages);
+        }
+      } catch (err) {
         reject(err);
       }
     });
