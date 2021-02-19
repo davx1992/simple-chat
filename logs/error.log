@@ -199,3 +199,80 @@ r.db("simple_chat").table("users").get("80a2f306-9c06-4ebb-8d7d-b1c1c171fa75").e
 2021-02-18T11:10:05.193Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
 2021-02-19T07:30:44.022Z [SIMPLE_CHAT] [31merror[39m: Cannot read property '0' of undefined
 2021-02-19T07:31:07.991Z [SIMPLE_CHAT] [31merror[39m: Cannot read property '0' of undefined
+2021-02-19T13:03:34.561Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:03:34.564Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:04:56.114Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:04:56.115Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:22:51.373Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:22:51.373Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:44:49.456Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:44:49.457Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:54:53.499Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:54:53.500Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:57:30.002Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T13:57:30.002Z [SIMPLE_CHAT] [31merror[39m: timeout on message 53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5
+2021-02-19T14:03:29.157Z [SIMPLE_CHAT] [31merror[39m: No attribute `user_id` in object:
+{
+	"id":	"80a2f306-9c06-4ebb-8d7d-b1c1c171fa75",
+	"last_login":	{
+		"$reql_type$":	"TIME",
+		"epoch_time":	1613743054.02,
+		"timezone":	"+00:00"
+	},
+	"last_login_timestamp":	1613743054020,
+	"state":	"Active"
+} in:
+r.db("simple_chat").table("users").get("80a2f306-9c06-4ebb-8d7d-b1c1c171fa75").merge((var_1) => {
+    connections: r.db("simple_chat").table("connections").getAll(var_1("user_id"), {
+                                                                 ^^^^^^^^^^^^^^^^   
+        index: "user_id"
+    }).coerceTo("array")
+}).pluck("connections", "id", "state").merge({
+    userId: r.row("id")
+}).without("id")
+
+2021-02-19T14:23:22.446Z [SIMPLE_CHAT] [31merror[39m: Index `to_message_id` was not found on table `simple_chat.message_event` in:
+r.db("simple_chat").table("message_event").getAll(["53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5", "2c8e5ff9-b0dc-4488-8d6e-899290d6e7d4"], {
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    index: "to_message_id"
+    ^^^^^^^^^^^^^^^^^^^^^^
+}).delete()
+^^^^^^^^^^^
+
+2021-02-19T14:23:22.456Z [SIMPLE_CHAT] [31merror[39m: Index `to_message_id` was not found on table `simple_chat.message_event` in:
+r.db("simple_chat").table("message_event").getAll(["53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5", "ee282fb9-55f7-45f2-9828-882444d2f549"], {
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    index: "to_message_id"
+    ^^^^^^^^^^^^^^^^^^^^^^
+}).delete()
+^^^^^^^^^^^
+
+2021-02-19T14:25:30.994Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:26:59.682Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:26:59.684Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:26:59.684Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:26:59.684Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:27:47.746Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:27:47.748Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:27:47.748Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:27:47.748Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:27:47.749Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:27:47.749Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:27:47.749Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.384Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.385Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.386Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.386Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.386Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.386Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.387Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:28:57.387Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.987Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.987Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.988Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.988Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.988Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.988Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.989Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.989Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T14:30:16.989Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75

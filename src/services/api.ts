@@ -1,11 +1,14 @@
 import { inject, injectable } from "inversify";
+import { r } from "rethinkdb-ts";
 import SERVICE_IDENTIFIER from "../constants/identifiers";
+import { UserState } from "../interfaces/authentication.interface";
 import {
   JoinChatDTO,
   LeaveChatDTO,
   NewChatDTO,
 } from "../interfaces/chats.interface";
 import { ChatTypes } from "../interfaces/messaging.interface";
+import { conn } from "./app";
 import { MessagingOperations } from "./messaging/operations";
 
 @injectable()
@@ -69,5 +72,9 @@ export class ApiService {
       leaveChatDto.chatId,
       leaveChatDto.userId
     );
+  }
+
+  async loadActiveUsers() {
+    return r.table("users").filter({ state: UserState.ACTIVE }).run(conn);
   }
 }

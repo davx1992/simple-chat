@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsNumber,
+  IsObject,
   IsString,
   ValidateIf,
   ValidateNested,
@@ -34,8 +35,8 @@ export class Message {
       typeof o.typing === "undefined" ||
       (typeof o.typing !== "undefined" && typeof o.body !== "undefined")
   )
-  @ValidateNested()
-  body?: MessageBody;
+  @IsObject()
+  body?: {};
   @ValidateIf(
     (o) =>
       typeof o.body === "undefined" ||

@@ -61,12 +61,14 @@ export class MessagingOperations {
   loadSUCChat = (users: string[]): Promise<Chat[]> => {
     return new Promise<Chat[]>(async (resolve, reject) => {
       try {
+        console.time("load suc chat");
         const chat = await r
           .table("chat")
           .filter((chat) => {
             return chat("users").contains(users[0], users[1]);
           })
           .run(conn);
+        console.timeEnd("load suc chat");
         resolve(chat);
       } catch (err) {
         logger.error(err);
@@ -121,19 +123,14 @@ export class MessagingOperations {
   loadSUCUser = (userId: string): Promise<Receipient> => {
     return new Promise<Receipient>(async (resolve, reject) => {
       try {
-        // const connections = await r
-        //   .table("connections")
-        //   .getAll(userId, { index: "user_id" })
-        //   .eqJoin("user_id", r.table("users"))
-        //   .run(conn);
         const receipient = (await r
           .table("users")
           .get(userId)
-          .merge(function (chat) {
+          .merge(function (user) {
             return {
               connections: r
                 .table("connections")
-                .getAll(chat("user_id"), { index: "user_id" })
+                .getAll(user("id"), { index: "user_id" })
                 .coerceTo("array"),
             };
           })
@@ -164,17 +161,6 @@ export class MessagingOperations {
   loadMUCUsers = (chatId: string): Promise<Receipient[]> => {
     return new Promise<Receipient[]>(async (resolve, reject) => {
       try {
-        // const connection = await r
-        //   .table("chat_user")
-        //   .getAll(chatId, { index: "chat_id" })
-        //   .eqJoin("user_id", r.table("connections"), {
-        //     index: "user_id",
-        //   })
-        //   .map((row) => row("right").merge({ temp: row("left")("temp") }))
-        //   .eqJoin("user_id", r.table("users"))
-        //   .run(conn);
-        // //TODO: think about case when there is no acttive connectiion, we need left join
-        // resolve(connection);
         console.time("receipient fetch");
         const receipients = (await r
           .table("chat_user")

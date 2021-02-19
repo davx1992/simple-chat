@@ -127,4 +127,9 @@ export default class ApiController {
       res.status(500).json({ error: err });
     }
   }
+
+  @httpGet("/users/active")
+  private async loadActiveUsers() {
+    return this._apiService.loadActiveUsers();
+  }
 }
