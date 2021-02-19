@@ -64,6 +64,11 @@ export default class AppService {
         const indexes = {
           connections: ["user_id"],
           messages: ["timestamp", "to", ["to", "timestamp"]],
+          chat_user: ["chat_id"],
+          message_event: [
+            ["to", "message_id"],
+            ["to", "message_id", "timestamp"],
+          ],
         };
 
         const tableCreationPromises = tables.map(async (table) => {
@@ -76,11 +81,11 @@ export default class AppService {
                 await r
                   .table(table)
                   .indexCreate(index.join("_"), [
-                    r.row("to"),
-                    r.row("timestamp"),
+                    r.row(index[0]),
+                    r.row(index[1]),
                   ])
                   .run(conn);
-                console.log(index.join("_"));
+                console.log(index[0] + "_" + index[1]);
               } else {
                 await r.table(table).indexCreate(index).run(conn);
               }
@@ -91,14 +96,28 @@ export default class AppService {
           }
         });
 
-        Promise.all(tableCreationPromises).then(() => {
-          resolve();
-        });
+        await Promise.all(tableCreationPromises);
+
+        // let i;
+        // for (i = 0; i < 10000; i++) {
+        //   const insert = async () => {
+        //     r.table("chat_user")
+        //       .insert({
+        //         chat_id: "e4932392-ad20-401f-b931-0a91b1a005111",
+        //         temp: false,
+        //         timestamp: 1613655097286,
+        //         user_id: "53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5",
+        //       })
+        //       .run(conn);
+        //   };
+        //   insert();
+        // }
 
         //Clear all open connections as on restart all connections are closed, and client will reconnect
         await r.table("connections").delete().run(conn);
-
+        logger.info(`Connections cleared`);
         logger.info(`Connected to database ${host}:${port}/${db}`);
+        resolve();
       } catch (error) {
         logger.error(error);
         reject(error);

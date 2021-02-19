@@ -2,10 +2,9 @@ import {
   Chat,
   ChatTypes,
   ChatUser,
-  Connection,
-  ConnectionChatUser,
   Message,
   MessageEvent,
+  Receipient,
 } from "../../interfaces/messaging.interface";
 import { now } from "lodash";
 import moment from "moment";
@@ -30,7 +29,7 @@ export class MessagingOperations {
   ): Promise<Message> => {
     return new Promise<Message>(async (resolve, reject) => {
       try {
-        const { to, body, timestamp } = message;
+        const { body, timestamp } = message;
         const savedMessage = await r
           .table("messages")
           .insert(
@@ -119,25 +118,38 @@ export class MessagingOperations {
    * @param userId receipient user id
    * @param chatId SUC chat id
    */
-  loadSUCUser = (
-    userId: string
-  ): Promise<JoinResult<ConnectionChatUser, User>[]> => {
-    return new Promise<JoinResult<ConnectionChatUser, User>[]>(
-      async (resolve, reject) => {
-        try {
-          const connections = await r
-            .table("connections")
-            .filter({ user_id: userId })
-            .eqJoin("user_id", r.table("users"))
-            .run(conn);
+  loadSUCUser = (userId: string): Promise<Receipient> => {
+    return new Promise<Receipient>(async (resolve, reject) => {
+      try {
+        // const connections = await r
+        //   .table("connections")
+        //   .getAll(userId, { index: "user_id" })
+        //   .eqJoin("user_id", r.table("users"))
+        //   .run(conn);
+        const receipient = (await r
+          .table("users")
+          .get(userId)
+          .merge(function (chat) {
+            return {
+              connections: r
+                .table("connections")
+                .getAll(chat("user_id"), { index: "user_id" })
+                .coerceTo("array"),
+            };
+          })
+          .pluck("connections", "id", "state")
+          .merge({
+            user_id: r.row("id"),
+          })
+          .without("id")
+          .run(conn)) as Receipient;
 
-          resolve(connections);
-        } catch (err) {
-          logger.error(err);
-          reject(err);
-        }
+        resolve(receipient);
+      } catch (err) {
+        logger.error(err);
+        reject(err);
       }
-    );
+    });
   };
 
   /**
@@ -149,28 +161,43 @@ export class MessagingOperations {
    * @param chatId id of chat for which to search
    * @param exclude id of user whom to exclude from query
    */
-  loadMUCUsers = (
-    chatId: string
-  ): Promise<JoinResult<ConnectionChatUser, User>[]> => {
-    return new Promise<JoinResult<ConnectionChatUser, User>[]>(
-      async (resolve, reject) => {
-        try {
-          const users = await r
-            .table("chat_user")
-            .filter({ chat_id: chatId })
-            .eqJoin("user_id", r.table("connections"), {
-              index: "user_id",
-            })
-            .map((row) => row("right").merge({ temp: row("left")("temp") }))
-            .eqJoin("user_id", r.table("users"))
-            .run(conn);
-          resolve(users);
-        } catch (err) {
-          logger.error(err);
-          reject(err);
-        }
+  loadMUCUsers = (chatId: string): Promise<Receipient[]> => {
+    return new Promise<Receipient[]>(async (resolve, reject) => {
+      try {
+        // const connection = await r
+        //   .table("chat_user")
+        //   .getAll(chatId, { index: "chat_id" })
+        //   .eqJoin("user_id", r.table("connections"), {
+        //     index: "user_id",
+        //   })
+        //   .map((row) => row("right").merge({ temp: row("left")("temp") }))
+        //   .eqJoin("user_id", r.table("users"))
+        //   .run(conn);
+        // //TODO: think about case when there is no acttive connectiion, we need left join
+        // resolve(connection);
+        console.time("receipient fetch");
+        const receipients = (await r
+          .table("chat_user")
+          .getAll(chatId, { index: "chat_id" })
+          .merge(function (chat) {
+            return {
+              connections: r
+                .table("connections")
+                .getAll(chat("user_id"), { index: "user_id" })
+                .coerceTo("array"),
+              state: r.table("users").get(chat("user_id"))("state"),
+            };
+          })
+          .pluck("connections", "user_id", "state", "temp")
+          .run(conn)) as Receipient[];
+        console.timeEnd("receipient fetch");
+
+        resolve(receipients);
+      } catch (err) {
+        logger.error(err);
+        reject(err);
       }
-    );
+    });
   };
 
   /**
@@ -212,6 +239,7 @@ export class MessagingOperations {
   };
 
   /**
+   * @query
    * Fetch message archive for chat. If @param after not provided will be fetched only last messages
    * If param provided then messages will be loaded which are having timestamp before specific message id
    *
@@ -404,10 +432,7 @@ export class MessagingOperations {
       try {
         const messageEvent = await r
           .table("message_event")
-          .filter({
-            message_id: messageId,
-            to: userId,
-          })
+          .getAll([userId, messageId], { index: "to_message_id" })
           .delete()
           .run(conn);
         resolve(messageEvent.deleted > 0);
@@ -432,10 +457,12 @@ export class MessagingOperations {
         try {
           const messageEvents = await r
             .table("message_event")
-            .filter({
-              to: userId,
-            })
-            .orderBy(r.desc("timestamp"))
+            .between(
+              [userId, r.minval, r.minval],
+              [userId, r.maxval, r.maxval],
+              { index: "to_message_id_timestamp", rightBound: "closed" }
+            )
+            .orderBy({ index: r.desc("to_message_id_timestamp") })
             .eqJoin("message_id", r.table("messages"))
             .run(conn);
           resolve(messageEvents);

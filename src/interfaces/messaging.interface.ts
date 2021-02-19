@@ -79,6 +79,9 @@ export interface Connection {
   user_id: string;
 }
 
-export interface ConnectionChatUser extends Connection {
+export interface Receipient {
   temp?: boolean;
+  state: string;
+  user_id: string;
+  connections: Connection[];
 }

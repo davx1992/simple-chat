@@ -197,3 +197,5 @@ r.db("simple_chat").table("users").get("80a2f306-9c06-4ebb-8d7d-b1c1c171fa75").e
 2021-02-18T11:10:05.193Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
 2021-02-18T11:10:05.193Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
 2021-02-18T11:10:05.193Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-19T07:30:44.022Z [SIMPLE_CHAT] [31merror[39m: Cannot read property '0' of undefined
+2021-02-19T07:31:07.991Z [SIMPLE_CHAT] [31merror[39m: Cannot read property '0' of undefined

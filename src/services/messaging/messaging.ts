@@ -1,7 +1,7 @@
 import {
   ChatTypes,
-  ConnectionChatUser,
   Message,
+  Receipient,
   ValidationError,
 } from "../../interfaces/messaging.interface";
 import { Socket } from "socket.io";
@@ -285,6 +285,7 @@ export default class MessagingService {
     message: Message,
     callback: (messageId?: string, error?: ValidationError[]) => void
   ): Promise<void> => {
+    console.time("message handler");
     const messageDto = Object.assign(new Message(), message);
 
     //Validate against DTO
@@ -317,34 +318,33 @@ export default class MessagingService {
       return;
     }
 
-    //Right is User and Left is Connection
-    let receipients: JoinResult<ConnectionChatUser, User>[] = [];
+    //Receipient list
+    let receipients: Receipient[] = [];
 
     //If Chat is Single User
     if (chat.type === ChatTypes.SUC) {
       const receipientId = chat.users.find((user) => user !== from);
-      receipients = await this._messagingOperations.loadSUCUser(receipientId);
+      const result = await this._messagingOperations.loadSUCUser(receipientId);
+      receipients = [result];
 
       //If chat is Multi user chat
     } else {
-      const userConnections = await this._messagingOperations.loadMUCUsers(
-        chat.id
-      );
+      const result = await this._messagingOperations.loadMUCUsers(chat.id);
 
       //Used to understand if user is saved to chat users, otherwise will create new record
       let userFound: boolean = false;
 
       //Get user connection list
-      userConnections.map((connectionUser) => {
+      result.map((receipient) => {
         // console.log(connectionUser, from);
 
         //Check if receipient is not sender
-        if (connectionUser.right.id !== from) {
-          receipients.push(connectionUser);
+        if (receipient.user_id !== from) {
+          receipients.push(receipient);
           //If user joined chat temporary then add him permanently
         } else {
           userFound = true; //Set that we have found user in user list
-          if (connectionUser.left.temp) {
+          if (receipient.temp) {
             this._messagingOperations.joinChatPermanently(chat.id, from);
           }
         }
@@ -390,36 +390,35 @@ export default class MessagingService {
 
     //Send message to receipient one by one in loop
     receipients.map((receipient) => {
-      if (receipient.right.state === UserState.ACTIVE) {
-        //Send message to receipient
-        io.of("/")
-          .sockets.get(receipient.left.id)
-          ?.emit(
-            "message",
-            messageToSend,
-            this.withTimeout(
-              () => {},
-              () => {
-                if (!onlyTyping) {
-                  this.handleOfflineMessage(
-                    messageToSend,
-                    receipient.right,
-                    from
-                  );
-                }
-              },
-              2000
-            )
-          );
+      if (receipient.state === UserState.ACTIVE) {
+        receipient.connections.map((connection) => {
+          //Send message to receipient
+          io.of("/")
+            .sockets.get(connection.id)
+            ?.emit(
+              "message",
+              messageToSend,
+              this.withTimeout(
+                () => {},
+                () => {
+                  if (!onlyTyping) {
+                    this.handleOfflineMessage(messageToSend, receipient, from);
+                  }
+                },
+                2000
+              )
+            );
+        });
       } else {
         if (!onlyTyping) {
-          this.handleOfflineMessage(messageToSend, receipient.right, from);
+          this.handleOfflineMessage(messageToSend, receipient, from);
         }
       }
     });
 
     //Send saved message id back to client, if message is only typing then just run callback with no params
     onlyTyping ? callback() : callback(messageToSend.id);
+    console.timeEnd("message handler");
   };
 
   /**
@@ -431,13 +430,13 @@ export default class MessagingService {
    */
   handleOfflineMessage = async (
     message: Message,
-    receipient: User,
+    receipient: Receipient,
     from: string
   ): Promise<void> => {
     //Handle case when timeout reached
     //Save message event in database, so this message will be sent when connected
-    this._messagingOperations.saveMessageEvent(message, receipient.id);
-    logger.info("User inactive " + receipient.id);
+    this._messagingOperations.saveMessageEvent(message, receipient.user_id);
+    logger.info("User inactive " + receipient.user_id);
     //TODO: send offline notification
   };
 
