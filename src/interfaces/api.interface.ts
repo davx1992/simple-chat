@@ -1,6 +1,8 @@
+import { Type } from "class-transformer";
 import {
   IsArray,
   IsEnum,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateIf,
@@ -34,4 +36,26 @@ export class LeaveChatDTO {
   chatId: string;
   @IsString()
   userId: string;
+}
+
+export class DeleteChatsDTO {
+  @IsArray()
+  chatIds: string[];
+}
+
+export enum TimeEntity {
+  DAYS = "days",
+  HOURS = "hours",
+  MINUTES = "minutes",
+  SECONDS = "seconds",
+  WEEKS = "weeks",
+  MONTHS = "months",
+}
+
+export class LoadInactiveChatListDTO {
+  @Type(() => Number)
+  @IsNumber()
+  old: number;
+  @IsEnum(TimeEntity)
+  entity: TimeEntity;
 }

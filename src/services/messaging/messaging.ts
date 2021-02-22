@@ -7,12 +7,10 @@ import {
 import { Socket } from "socket.io";
 import { logger } from "../../constants/logger";
 import { inject, injectable } from "inversify";
-import { conn, io } from "../app";
-import { JoinResult, r } from "rethinkdb-ts";
+import { io } from "../app";
 import { validate } from "class-validator";
 import { MessagingOperations } from "./operations";
 import SERVICE_IDENTIFIER from "../../constants/identifiers";
-import { User, UserState } from "../../interfaces/authentication.interface";
 
 @injectable()
 export default class MessagingService {
@@ -36,14 +34,11 @@ export default class MessagingService {
     this._messagingOperations.saveUser(userId);
     this._messagingOperations.saveConnection(userId, socket.id);
 
-    //TODO: Think how to handle different sessions if multiple connections
     logger.info("Connected " + socket.id + " " + userId);
 
     //Socket event initialization
     socket.on("message", this.onMessage.bind(null, socket));
     socket.on("create_chat", this.onCreateChat.bind(null, socket));
-    // socket.on("get_users", this.onGetUsers.bind(null, socket));
-    // socket.on("get_chats", this.onGetChats.bind(null, socket));
     socket.on("join_chat", this.onJoinChat.bind(null, socket));
     socket.on("leave_chat", this.onLeaveChat.bind(null, socket));
     socket.on("disconnect", this.onDisconnect.bind(null, socket));
@@ -75,28 +70,6 @@ export default class MessagingService {
         });
       });
   };
-
-  // onGetChats = async (
-  //   socket: Socket,
-  //   callback: (chats) => []
-  // ): Promise<void> => {
-  //   const userId = socket.handshake.auth["userId"];
-  //   const chatsMuc = await r
-  //     .table("chat")
-  //     .filter({ type: ChatTypes.MUC })
-  //     .run(conn);
-
-  //   const chatsSUC = await r
-  //     .table("chat_user")
-  //     .filter({ user_id: userId })
-  //     .eqJoin("chat_id", r.table("chat"))
-  //     .zip()
-  //     .filter((chat) => chat("type").ne(ChatTypes.MUC))
-  //     .run(conn);
-
-  //   const chats = [...chatsMuc, ...chatsSUC];
-  //   callback(chats);
-  // };
 
   /**
    *
@@ -130,7 +103,6 @@ export default class MessagingService {
   onDisconnect = async (socket: Socket): Promise<void> => {
     const userId = socket.handshake.auth["userId"];
 
-    this._messagingOperations.updateUserInactive(userId);
     this._messagingOperations.deleteTempJoins(userId);
     this._messagingOperations.deleteConnection(socket.id);
 
@@ -390,7 +362,7 @@ export default class MessagingService {
 
     //Send message to receipient one by one in loop
     receipients.map((receipient) => {
-      if (receipient.state === UserState.ACTIVE) {
+      if (receipient.connections?.length > 0) {
         receipient.connections.map((connection) => {
           //Send message to receipient
           io.of("/")

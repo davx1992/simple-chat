@@ -12,7 +12,7 @@ import { injectable } from "inversify";
 import { logger } from "../../constants/logger";
 import { conn } from "../app";
 import { JoinResult, r } from "rethinkdb-ts";
-import { User, UserState } from "../../interfaces/authentication.interface";
+import { User } from "../../interfaces/authentication.interface";
 
 @injectable()
 export class MessagingOperations {
@@ -217,6 +217,72 @@ export class MessagingOperations {
           .run(conn);
         const createdChat = savedChat.changes[0].new_val;
         resolve(createdChat.id);
+      } catch (err) {
+        logger.error(err);
+        reject(err);
+      }
+    });
+  };
+
+  /**
+   * @query
+   * Get list of all inactive chats, which had no messages after speicific time.
+   * Time is provided in timestmap, if any message were not sent after provided timestmap
+   * then chat will be considered as inactive.
+   *
+   * @param timestamp from which time to consider chat as inactive  - from timestamp
+   */
+  loadInactiveChats = (timestamp: number): Promise<string[]> => {
+    return new Promise<string[]>(async (resolve, reject) => {
+      try {
+        const chatIds = await r
+          .table("chat")
+          .filter((chat) => {
+            return r.and(
+              r
+                .db("simple_chat")
+                .table("messages")
+                .between([chat("id"), timestamp], [chat("id"), r.maxval], {
+                  index: "to_timestamp",
+                })
+                .isEmpty(),
+              chat("timestamp").le(timestamp)
+            );
+          })("id")
+          .coerceTo("array")
+          .run(conn);
+
+        resolve(chatIds);
+      } catch (err) {
+        logger.error(err);
+        reject(err);
+      }
+    });
+  };
+
+  /**
+   * Delete all chat and chat related entities - chat, chat users, messages
+   *
+   * @param chatId id of the chat to delete
+   */
+  deleteChat = (chatId: string): Promise<void> => {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        await r.table("chat").get(chatId).delete().run(conn);
+
+        await r
+          .table("chat_user")
+          .getAll(chatId, { index: "chat_id" })
+          .delete()
+          .run(conn);
+
+        await r
+          .table("messages")
+          .getAll(chatId, { index: "to" })
+          .delete()
+          .run(conn);
+
+        resolve();
       } catch (err) {
         logger.error(err);
         reject(err);
@@ -482,27 +548,6 @@ export class MessagingOperations {
   };
 
   /**
-   * Update user with inactive status
-   *
-   * @param userId id of user which to update
-   */
-  updateUserInactive = (userId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await r
-          .table("users")
-          .get(userId)
-          .update({ state: UserState.INACTIVE })
-          .run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
-  };
-
-  /**
    * Save user in database with socket id
    *
    * @param userId user id which to save - this will be primary key
@@ -516,7 +561,6 @@ export class MessagingOperations {
               id: userId,
               last_login_timestamp: now(),
               last_login: moment.utc().toDate(),
-              state: UserState.ACTIVE,
             },
             { conflict: "update" }
           )

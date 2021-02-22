@@ -1,15 +1,14 @@
 import { inject, injectable } from "inversify";
-import { r } from "rethinkdb-ts";
 import SERVICE_IDENTIFIER from "../constants/identifiers";
-import { UserState } from "../interfaces/authentication.interface";
 import {
   JoinChatDTO,
   LeaveChatDTO,
   NewChatDTO,
-} from "../interfaces/chats.interface";
+  TimeEntity,
+} from "../interfaces/api.interface";
 import { ChatTypes } from "../interfaces/messaging.interface";
-import { conn } from "./app";
 import { MessagingOperations } from "./messaging/operations";
+import moment from "moment";
 
 @injectable()
 export class ApiService {
@@ -74,7 +73,43 @@ export class ApiService {
     );
   }
 
-  async loadActiveUsers() {
-    return r.table("users").filter({ state: UserState.ACTIVE }).run(conn);
+  /**
+   * Load inactive chats based on oldernes entity and number.
+   * For example, if it is needed to load all chats which had no messages for past 2 days,
+   * @old will be 2 and @timeEntity will be days.
+   *
+   * @param old number of entity olderness
+   * @param timeEntity entity of time - days, months, minutes, weeks, seconds
+   */
+  async loadInactiveChats(
+    old: number,
+    timeEntity: TimeEntity
+  ): Promise<string[]> {
+    const fromTimestamp = moment()
+      .subtract(old, timeEntity)
+      .utc()
+      .toDate()
+      .getTime();
+
+    return this._messagingOperations.loadInactiveChats(fromTimestamp);
+  }
+
+  /**
+   * Delete chats and related entities - messages, chat users, chats
+   *
+   * @param chatIds chat ids array to delete
+   */
+  deleteChats(chatIds: string[]): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const deletePromises = chatIds.map(async (chatId) => {
+          return await this._messagingOperations.deleteChat(chatId);
+        });
+        await Promise.all(deletePromises);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 }

@@ -2,6 +2,7 @@ import {
   controller,
   httpGet,
   httpPost,
+  queryParam,
   request,
   requestParam,
   response,
@@ -9,10 +10,13 @@ import {
 import * as express from "express";
 import { ValidateBody, ValidateQuery } from "../decorators/validate.decorator";
 import {
+  DeleteChatsDTO,
   JoinChatDTO,
   LeaveChatDTO,
+  LoadInactiveChatListDTO,
   NewChatDTO,
-} from "../interfaces/chats.interface";
+  TimeEntity,
+} from "../interfaces/api.interface";
 import SERVICE_IDENTIFIER from "../constants/identifiers";
 import { inject } from "inversify";
 import { ChatTypes } from "../interfaces/messaging.interface";
@@ -42,7 +46,7 @@ export default class ApiController {
   private async createChat(
     @request() req: express.Request,
     @response() res: express.Response
-  ) {
+  ): Promise<string> {
     const newChat: NewChatDTO = req.body;
     const { type, userId, users } = newChat;
 
@@ -92,11 +96,11 @@ export default class ApiController {
   private async joinChat(
     @request() req: express.Request,
     @response() res: express.Response
-  ) {
+  ): Promise<void> {
     try {
       const joinChat: JoinChatDTO = req.body;
       await this._apiService.joinChat(joinChat);
-      res.status(200);
+      res.status(200).send();
     } catch (err) {
       res.status(500).json({ error: err });
     }
@@ -118,18 +122,51 @@ export default class ApiController {
   private async leaveChat(
     @request() req: express.Request,
     @response() res: express.Response
-  ) {
+  ): Promise<void> {
     try {
       const leaveChat: LeaveChatDTO = req.body;
       await this._apiService.leaveChat(leaveChat);
-      res.status(200);
+      res.status(200).send();
     } catch (err) {
       res.status(500).json({ error: err });
     }
   }
 
-  @httpGet("/users/active")
-  private async loadActiveUsers() {
-    return this._apiService.loadActiveUsers();
+  /**
+   * Load inactive chats based on oldernes entity and number.
+   * For example, if it is needed to load all chats which had no messages for past 2 days,
+   * @old will be 2 and @timeEntity will be days.
+   *
+   * @param old how long time inactive chats to load
+   * @param timeEntity entity of time - days, months, minutes, weeks, seconds
+   * @param res express response object
+   */
+  @httpGet("/chat/inactive")
+  @ValidateQuery(LoadInactiveChatListDTO)
+  private async loadInactiveChats(
+    @queryParam("old") old: number,
+    @queryParam("entity") timeEntity: TimeEntity,
+    @response() res: express.Response
+  ): Promise<string[]> {
+    try {
+      return this._apiService.loadInactiveChats(old, timeEntity);
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
+  }
+
+  @httpPost("/chat/delete")
+  @ValidateBody(DeleteChatsDTO)
+  private async deleteChats(
+    @request() req: express.Request,
+    @response() res: express.Response
+  ): Promise<void> {
+    try {
+      const deleteChats: DeleteChatsDTO = req.body;
+      await this._apiService.deleteChats(deleteChats.chatIds);
+      res.status(200).send();
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
   }
 }

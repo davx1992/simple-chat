@@ -1,5 +1,6 @@
 import { validate, ValidationError } from "class-validator";
 import { plainToClass } from "class-transformer";
+import { IncomingMessage, ServerResponse } from "http";
 
 function validationFactory<T>(
   metadataKey: Symbol,
@@ -17,8 +18,8 @@ function validationFactory<T>(
     descriptor.value = async function (...args) {
       const model = Reflect.getOwnMetadata(metadataKey, target, propertyName);
 
-      const incomingMessage = args[0];
-      const res = args[1];
+      const incomingMessage = args.find((a) => a instanceof IncomingMessage);
+      const res = args.find((a) => a instanceof ServerResponse);
       const plain = incomingMessage[source];
 
       const errors = await validate(plainToClass(model, plain));

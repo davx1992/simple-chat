@@ -98,21 +98,6 @@ export default class AppService {
 
         await Promise.all(tableCreationPromises);
 
-        // let i;
-        // for (i = 0; i < 10000; i++) {
-        //   const insert = async () => {
-        //     r.table("chat_user")
-        //       .insert({
-        //         chat_id: "e4932392-ad20-401f-b931-0a91b1a005111",
-        //         temp: false,
-        //         timestamp: 1613655097286,
-        //         user_id: "53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5",
-        //       })
-        //       .run(conn);
-        //   };
-        //   insert();
-        // }
-
         //Clear all open connections as on restart all connections are closed, and client will reconnect
         await r.table("connections").delete().run(conn);
         logger.info(`Connections cleared`);
@@ -154,9 +139,12 @@ export default class AppService {
     this._messaging.initEvents();
     this._authentication.addMidleware(extAuthenticationUrl);
 
+    //Print API endpoints
     const routeInfo = getRouteInfo(container);
+    routeInfo[0].endpoints.map((route) => {
+      logger.info("API " + route.route);
+    });
 
-    logger.info(prettyjson.render({ routes: routeInfo }));
     server.listen(port, () => {
       logger.info(`Listening on *:${port}`);
     });

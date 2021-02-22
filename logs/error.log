@@ -276,3 +276,17 @@ r.db("simple_chat").table("message_event").getAll(["53fe2eb1-3610-44d7-8eeb-6dab
 2021-02-19T14:30:16.989Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
 2021-02-19T14:30:16.989Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
 2021-02-19T14:30:16.989Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T10:42:45.002Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:42:45.701Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:43:30.968Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:43:32.097Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:44:16.579Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:44:18.493Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:45:02.944Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:45:04.984Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:45:48.857Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:45:51.264Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:46:34.637Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:46:37.044Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:46:57.748Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T10:46:58.218Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000

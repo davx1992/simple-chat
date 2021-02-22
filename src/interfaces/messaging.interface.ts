@@ -36,7 +36,9 @@ export class Message {
       (typeof o.typing !== "undefined" && typeof o.body !== "undefined")
   )
   @IsObject()
-  body?: {};
+  body?: {
+    [key: string]: any;
+  };
   @ValidateIf(
     (o) =>
       typeof o.body === "undefined" ||
