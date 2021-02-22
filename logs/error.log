@@ -290,3 +290,280 @@ r.db("simple_chat").table("message_event").getAll(["53fe2eb1-3610-44d7-8eeb-6dab
 2021-02-22T10:46:37.044Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
 2021-02-22T10:46:57.748Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
 2021-02-22T10:46:58.218Z [SIMPLE_CHAT] [31merror[39m: Error during authentication Error: connect ECONNREFUSED 127.0.0.1:4000
+2021-02-22T13:50:38.476Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 404
+2021-02-22T13:51:45.725Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:52:16.183Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T13:55:14.277Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:55:14.278Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:55:14.278Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:55:48.214Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:55:48.215Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:55:48.215Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:55:48.216Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:18.975Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:18.976Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:18.976Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:18.977Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:18.977Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:57.305Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:57.306Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:57.307Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:57.307Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:57.307Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:56:57.307Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:59:58.270Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:59:58.270Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:59:58.271Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:59:58.271Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:59:58.271Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:59:58.271Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T13:59:58.271Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:01.623Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:01.624Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:01.625Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:01.625Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:01.625Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:01.626Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:01.626Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:46.900Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:46.900Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:46.900Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:46.901Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:46.901Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:46.901Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:00:46.901Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.516Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.517Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.518Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.518Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.518Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.518Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.518Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:04:47.518Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.195Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.196Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.196Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.197Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.197Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.197Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.197Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:29.197Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.104Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.105Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.105Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.106Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.106Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.106Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.106Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:06:55.106Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.900Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.901Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.901Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.902Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.902Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.902Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.902Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:11:51.902Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.154Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.156Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.156Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.156Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.157Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.157Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.157Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:12:52.157Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.080Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.082Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.082Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.083Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.083Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.083Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.084Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:13:08.084Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.359Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.361Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.361Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.361Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.362Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.362Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.362Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.362Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:19.363Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.610Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.611Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.611Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.611Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.611Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.611Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.611Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.612Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:17:35.612Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.883Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.883Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.884Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.884Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.884Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.884Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.884Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.884Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.884Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.885Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.885Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:18:57.885Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.326Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.327Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.328Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.328Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.328Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.328Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.328Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.329Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.329Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.329Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.329Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.329Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:22.329Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.953Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.954Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.955Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.955Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.955Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.955Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.955Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.956Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.956Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.956Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.957Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.957Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:29:41.957Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.794Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.795Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.795Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.795Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.796Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.796Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.796Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.796Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:49.796Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:51.874Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:51.874Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:51.874Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:30:51.875Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.941Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.943Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.943Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.943Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.943Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.943Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.944Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.944Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.944Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.944Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.944Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.944Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:32:57.945Z [SIMPLE_CHAT] [31merror[39m: timeout on message 80a2f306-9c06-4ebb-8d7d-b1c1c171fa75
+2021-02-22T14:33:48.319Z [SIMPLE_CHAT] [31merror[39m: Table `simple_chat.chat_user` does not exist in:
+r.db("simple_chat").table("chat_user").filter({
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^         
+    userId: "53fe2eb1-3610-44d7-8eeb-6dabf6e2cbd5",
+    temp: true
+}).delete()
+
+2021-02-22T14:33:48.320Z [SIMPLE_CHAT] [31merror[39m: Table `simple_chat.connections` does not exist in:
+r.db("simple_chat").table("connections").get("H5EvTj5_P9rBFVyeAAAD").delete()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                     
+
+2021-02-22T14:33:50.183Z [SIMPLE_CHAT] [31merror[39m: Table `simple_chat.chat_user` does not exist in:
+r.db("simple_chat").table("chat_user").filter({
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^         
+    userId: "80a2f306-9c06-4ebb-8d7d-b1c1c171fa75",
+    temp: true
+}).delete()
+
+2021-02-22T14:33:50.183Z [SIMPLE_CHAT] [31merror[39m: Table `simple_chat.connections` does not exist in:
+r.db("simple_chat").table("connections").get("lpwKCniaGRReWDXmAAAB").delete()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                     
+
+2021-02-22T14:36:43.261Z [SIMPLE_CHAT] [31merror[39m: undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+2021-02-22T14:38:08.541Z [SIMPLE_CHAT] [31merror[39m: Database `simple_chat` does not exist in:
+r.db("simple_chat").tableList().coerceTo("ARRAY")
+^^^^^^^^^^^^^^^^^^^                              
+
+2021-02-22T14:45:46.089Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:54.731Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:57.247Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:57.746Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:58.080Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:58.239Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:58.414Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:58.567Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:58.718Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:58.873Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:59.034Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:59.192Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:59.333Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:59.489Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:59.645Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:59.809Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:45:59.965Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:46:00.110Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:46:03.305Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:46:05.309Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:50:26.403Z [SIMPLE_CHAT] [31merror[39m: Cannot perform bracket on a non-object non-sequence `null` in:
+r.db("simple_chat").table("messages").between(["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r
+    .minval], ["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r.db("simple_chat").table("messages")
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    .get("44130465-615f-462b-ba09-7cf390a21aaa")("timestamp")], {
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                 
+        index: "to_timestamp"
+    }).orderBy({
+        index: r.desc("to_timestamp")
+    }).limit(10)
+
+2021-02-22T14:50:26.407Z [SIMPLE_CHAT] [31merror[39m: Cannot perform bracket on a non-object non-sequence `null` in:
+r.db("simple_chat").table("messages").between(["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r
+    .minval], ["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r.db("simple_chat").table("messages")
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    .get("44130465-615f-462b-ba09-7cf390a21aaa")("timestamp")], {
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                 
+        index: "to_timestamp"
+    }).orderBy({
+        index: r.desc("to_timestamp")
+    }).limit(10)
+
+2021-02-22T14:56:19.629Z [SIMPLE_CHAT] [31merror[39m: Cannot perform bracket on a non-object non-sequence `null` in:
+r.db("simple_chat").table("messages").between(["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r
+    .minval], ["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r.db("simple_chat").table("messages")
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    .get("44130465-615f-462b-ba09-7cf390a21a82aa")("timestamp")], {
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                 
+        index: "to_timestamp"
+    }).orderBy({
+        index: r.desc("to_timestamp")
+    }).limit(10)
+
+2021-02-22T14:56:19.633Z [SIMPLE_CHAT] [31merror[39m: Cannot perform bracket on a non-object non-sequence `null` in:
+r.db("simple_chat").table("messages").between(["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r
+    .minval], ["feb64d5c-a4cc-4269-aa75-f04db4a6e921", r.db("simple_chat").table("messages")
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    .get("44130465-615f-462b-ba09-7cf390a21a82aa")("timestamp")], {
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                 
+        index: "to_timestamp"
+    }).orderBy({
+        index: r.desc("to_timestamp")
+    }).limit(10)
+
+2021-02-22T14:56:32.456Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:52.162Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:52.347Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:52.479Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:52.627Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:52.751Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:52.877Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:53.013Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:53.137Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:53.266Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:53.384Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:53.505Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:53.636Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401
+2021-02-22T14:56:53.815Z [SIMPLE_CHAT] [31merror[39m: Request failed with status code 401

@@ -66,6 +66,7 @@ export default class AppService {
           messages: ["timestamp", "to", ["to", "timestamp"]],
           chat_user: ["chat_id"],
           message_event: [
+            "chat_id",
             ["to", "message_id"],
             ["to", "message_id", "timestamp"],
           ],
@@ -74,6 +75,7 @@ export default class AppService {
         const tableCreationPromises = tables.map(async (table) => {
           if (!existing.includes(table)) {
             await r.tableCreate(table).run(conn);
+            logger.info(`Created table ${table}`);
 
             indexes[table]?.map(async (index) => {
               //If is array then it is compound index
@@ -92,7 +94,6 @@ export default class AppService {
 
               logger.info(`Index ${index} created on table ${table}`);
             });
-            logger.info(`Created table ${table}`);
           }
         });
 
@@ -136,7 +137,7 @@ export default class AppService {
     await this.initiateDatabase(db_host, db_port, db_name);
     io = new Server(server);
 
-    this._messaging.initEvents();
+    this._messaging.initEvents(config);
     this._authentication.addMidleware(extAuthenticationUrl);
 
     //Print API endpoints

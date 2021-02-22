@@ -84,7 +84,6 @@ export interface Connection {
 
 export interface Receipient {
   temp?: boolean;
-  state: string;
   user_id: string;
   connections: Connection[];
 }

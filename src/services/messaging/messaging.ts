@@ -7,14 +7,19 @@ import {
 import { Socket } from "socket.io";
 import { logger } from "../../constants/logger";
 import { inject, injectable } from "inversify";
-import { io } from "../app";
+import { conn, io } from "../app";
 import { validate } from "class-validator";
 import { MessagingOperations } from "./operations";
 import SERVICE_IDENTIFIER from "../../constants/identifiers";
+import axios from "axios";
+import { AppConfig } from "../../interfaces/app.interface";
+import { r } from "rethinkdb-ts";
+import moment from "moment";
 
 @injectable()
 export default class MessagingService {
   private _messagingOperations: MessagingOperations;
+  private _config: AppConfig;
 
   constructor(
     @inject(SERVICE_IDENTIFIER.MESSAGING_OPERATIONS)
@@ -29,46 +34,50 @@ export default class MessagingService {
    * @param socket connection socket instance
    */
   onConnect = (socket: Socket): void => {
-    const userId = socket.handshake.auth["userId"];
+    try {
+      const userId = socket.handshake.auth["userId"];
 
-    this._messagingOperations.saveUser(userId);
-    this._messagingOperations.saveConnection(userId, socket.id);
+      this._messagingOperations.saveUser(userId);
+      this._messagingOperations.saveConnection(userId, socket.id);
 
-    logger.info("Connected " + socket.id + " " + userId);
+      logger.info("Connected " + socket.id + " " + userId);
 
-    //Socket event initialization
-    socket.on("message", this.onMessage.bind(null, socket));
-    socket.on("create_chat", this.onCreateChat.bind(null, socket));
-    socket.on("join_chat", this.onJoinChat.bind(null, socket));
-    socket.on("leave_chat", this.onLeaveChat.bind(null, socket));
-    socket.on("disconnect", this.onDisconnect.bind(null, socket));
-    socket.on("load_archive", this.onLoadArchive.bind(null, socket));
+      //Socket event initialization
+      socket.on("message", this.onMessage.bind(null, socket));
+      socket.on("create_chat", this.onCreateChat.bind(null, socket));
+      socket.on("join_chat", this.onJoinChat.bind(null, socket));
+      socket.on("leave_chat", this.onLeaveChat.bind(null, socket));
+      socket.on("disconnect", this.onDisconnect.bind(null, socket));
+      socket.on("load_archive", this.onLoadArchive.bind(null, socket));
 
-    //Send undelivered messages
-    this._messagingOperations
-      .loadMessageEvents(userId)
-      .then((undeliveredMessages) => {
-        undeliveredMessages.map((message) => {
-          //Send message to just connected user
-          socket.emit(
-            "message",
-            message.right,
-            this.withTimeout(
-              () => {
-                //Delete message event if message received by client
-                this._messagingOperations.deleteAcknowledgedMessageEvent(
-                  message.right.id,
-                  userId
-                );
-              },
-              () => {
-                logger.error("timeout on message " + userId);
-              },
-              2000
-            )
-          );
+      //Send undelivered messages
+      this._messagingOperations
+        .loadMessageEvents(userId)
+        .then((undeliveredMessages) => {
+          undeliveredMessages.map((message) => {
+            //Send message to just connected user
+            socket.emit(
+              "message",
+              message.right,
+              this.withTimeout(
+                () => {
+                  //Delete message event if message received by client
+                  this._messagingOperations.deleteAcknowledgedMessageEvent(
+                    message.right.id,
+                    userId
+                  );
+                },
+                () => {
+                  logger.error("timeout on message " + userId);
+                },
+                2000
+              )
+            );
+          });
         });
-      });
+    } catch (error) {
+      logger.error(error);
+    }
   };
 
   /**
@@ -83,15 +92,19 @@ export default class MessagingService {
     after: string = null,
     callback: (messages?: Message[], error?: string) => void
   ) => {
-    if (chatId && limit) {
-      const messages = await this._messagingOperations.loadArchive(
-        limit,
-        chatId,
-        after
-      );
-      callback(messages);
-    } else {
-      callback(null, "No chat Id or limit promvided.");
+    try {
+      if (chatId && limit) {
+        const messages = await this._messagingOperations.loadArchive(
+          limit,
+          chatId,
+          after
+        );
+        callback(messages);
+      } else {
+        callback(null, "No chat Id or limit promvided.");
+      }
+    } catch (error) {
+      callback(null, "Error during archive fetch.");
     }
   };
 
@@ -101,12 +114,16 @@ export default class MessagingService {
    * @param socket connection socket instance
    */
   onDisconnect = async (socket: Socket): Promise<void> => {
-    const userId = socket.handshake.auth["userId"];
+    try {
+      const userId = socket.handshake.auth["userId"];
 
-    this._messagingOperations.deleteTempJoins(userId);
-    this._messagingOperations.deleteConnection(socket.id);
+      this._messagingOperations.deleteTempJoins(userId);
+      this._messagingOperations.deleteConnection(socket.id);
 
-    logger.info("Disconnected " + userId);
+      logger.info("Disconnected " + userId);
+    } catch (error) {
+      logger.error(error);
+    }
   };
 
   /**
@@ -122,14 +139,18 @@ export default class MessagingService {
     temp: boolean = false,
     callback: (success: boolean, error?: string) => void
   ) => {
-    const from: string = socket.handshake.auth["userId"];
+    try {
+      const from: string = socket.handshake.auth["userId"];
 
-    if (chatId) {
-      await this._messagingOperations.joinChat(chatId, from, temp);
-      callback(true);
-    } else {
-      logger.error("No chat Id provided.");
-      callback(false, "No chat Id provided.");
+      if (chatId) {
+        await this._messagingOperations.joinChat(chatId, from, temp);
+        callback(true);
+      } else {
+        logger.error("No chat Id provided.");
+        callback(false, "No chat Id provided.");
+      }
+    } catch (error) {
+      logger.error(error);
     }
   };
 
@@ -145,14 +166,17 @@ export default class MessagingService {
     chatId: string,
     callback: (success: boolean, error?: string) => void
   ) => {
-    const from: string = socket.handshake.auth["userId"];
-
-    if (chatId) {
-      await this._messagingOperations.leaveChat(chatId, from);
-      callback(true);
-    } else {
-      logger.error("No chat Id provided.");
-      callback(false, "No chat Id provided.");
+    try {
+      const from: string = socket.handshake.auth["userId"];
+      if (chatId) {
+        await this._messagingOperations.leaveChat(chatId, from);
+        callback(true);
+      } else {
+        logger.error("No chat Id provided.");
+        callback(false, "No chat Id provided.");
+      }
+    } catch (error) {
+      logger.error(error);
     }
   };
 
@@ -169,31 +193,31 @@ export default class MessagingService {
     users: string[],
     callback: (chatId?: string, error?: string) => void
   ): Promise<void> => {
-    const from: string = socket.handshake.auth["userId"];
-    if (type === ChatTypes.SUC) {
-      if (users.length === 2) {
-        //Validate user list if it is having two people and one of them is sender
-        const receipient = users.find((user) => user !== from);
-        if (!receipient) {
-          logger.error("User list should contain creator and receipient");
-          callback(null, "User list should contain creator and receipient");
+    try {
+      const from: string = socket.handshake.auth["userId"];
+      if (type === ChatTypes.SUC) {
+        if (users.length === 2) {
+          //Validate user list if it is having two people and one of them is sender
+          const receipient = users.find((user) => user !== from);
+          if (!receipient) {
+            logger.error("User list should contain creator and receipient");
+            callback(null, "User list should contain creator and receipient");
+            return;
+          }
+        } else {
+          logger.error("Only two users should be provided for SUC chat");
+          callback(null, "Only two users should be provided for SUC chat");
           return;
         }
-      } else {
-        logger.error("Only two users should be provided for SUC chat");
-        callback(null, "Only two users should be provided for SUC chat");
-        return;
+
+        //Check if chat already exists, if exists send existing chat Id
+        const existingChat = await this._messagingOperations.loadSUCChat(users);
+        if (existingChat.length > 0) {
+          callback(existingChat[0].id);
+          return;
+        }
       }
 
-      //Check if chat already exists, if exists send existing chat Id
-      const existingChat = await this._messagingOperations.loadSUCChat(users);
-      if (existingChat.length > 0) {
-        callback(existingChat[0].id);
-        return;
-      }
-    }
-
-    try {
       //Create chat record
       const chatId = await this._messagingOperations.createChat(
         type,
@@ -257,140 +281,157 @@ export default class MessagingService {
     message: Message,
     callback: (messageId?: string, error?: ValidationError[]) => void
   ): Promise<void> => {
-    console.time("message handler");
-    const messageDto = Object.assign(new Message(), message);
+    try {
+      console.time("message handler");
+      const messageDto = Object.assign(new Message(), message);
 
-    //Validate against DTO
-    const errors = await validate(messageDto);
+      //Validate against DTO
+      const errors = await validate(messageDto);
 
-    //If errors during validation return errors and do not proceed further.
-    if (errors.length > 0) {
-      const error = errors.map((err) => {
-        return {
-          field: err.property,
-          error: JSON.stringify(err.constraints),
+      //If errors during validation return errors and do not proceed further.
+      if (errors.length > 0) {
+        const error = errors.map((err) => {
+          return {
+            field: err.property,
+            error: JSON.stringify(err.constraints),
+          };
+        });
+        logger.error("validation failed. errors: " + JSON.stringify(error));
+        callback(null, error);
+        return;
+      }
+
+      const from: string = socket.handshake.auth["userId"];
+      const chat = await this._messagingOperations.loadChatById(messageDto.to);
+
+      //If chat do not exist then throw an error. Chat should exist when sending message
+      if (!chat) {
+        const error = {
+          field: "to",
+          error: "Chat do not exist, please create new chat.",
         };
-      });
-      logger.error("validation failed. errors: " + JSON.stringify(error));
-      callback(null, error);
-      return;
-    }
+        logger.error(JSON.stringify(error));
+        callback(null, [error]);
+        return;
+      }
 
-    const from: string = socket.handshake.auth["userId"];
-    const chat = await this._messagingOperations.loadChatById(messageDto.to);
+      //Receipient list
+      let receipients: Receipient[] = [];
 
-    //If chat do not exist then throw an error. Chat should exist when sending message
-    if (!chat) {
-      const error = {
-        field: "to",
-        error: "Chat do not exist, please create new chat.",
-      };
-      logger.error(JSON.stringify(error));
-      callback(null, [error]);
-      return;
-    }
+      //If Chat is Single User
+      if (chat.type === ChatTypes.SUC) {
+        const receipientId = chat.users.find((user) => user !== from);
+        const result = await this._messagingOperations.loadSUCUser(
+          receipientId
+        );
+        receipients = [result];
 
-    //Receipient list
-    let receipients: Receipient[] = [];
+        //If chat is Multi user chat
+      } else {
+        const result = await this._messagingOperations.loadMUCUsers(chat.id);
 
-    //If Chat is Single User
-    if (chat.type === ChatTypes.SUC) {
-      const receipientId = chat.users.find((user) => user !== from);
-      const result = await this._messagingOperations.loadSUCUser(receipientId);
-      receipients = [result];
+        //Used to understand if user is saved to chat users, otherwise will create new record
+        let userFound: boolean = false;
 
-      //If chat is Multi user chat
-    } else {
-      const result = await this._messagingOperations.loadMUCUsers(chat.id);
+        //Get user connection list
+        result.map((receipient) => {
+          // console.log(connectionUser, from);
 
-      //Used to understand if user is saved to chat users, otherwise will create new record
-      let userFound: boolean = false;
+          //Check if receipient is not sender
+          if (receipient.user_id !== from) {
+            receipients.push(receipient);
+            //If user joined chat temporary then add him permanently
+          } else {
+            userFound = true; //Set that we have found user in user list
+            if (receipient.temp) {
+              this._messagingOperations.joinChatPermanently(chat.id, from);
+            }
+          }
+        });
 
-      //Get user connection list
-      result.map((receipient) => {
-        // console.log(connectionUser, from);
+        //If user is not found in chat user list, it means due to some error it was not joined as per the process
+        //Lets create new chat user then, applicable only to MUC chat
+        if (!userFound) {
+          this._messagingOperations.joinChat(chat.id, from);
+        }
+      }
 
-        //Check if receipient is not sender
-        if (receipient.user_id !== from) {
-          receipients.push(receipient);
-          //If user joined chat temporary then add him permanently
+      let messageToSend: Message;
+      let onlyTyping: boolean = false;
+
+      //If sending typing then do not save message
+      if (
+        typeof messageDto.typing !== "undefined" &&
+        typeof messageDto.body === "undefined"
+      ) {
+        //If only typing do not save message but send it to participants
+        messageToSend = messageDto;
+        onlyTyping = true;
+      } else {
+        //If standard message then save to database,
+        //Before saving create JSON of message and get UUID, and do not wait when saved,
+        //To reduce processing time until Id received,
+        //we are getting uuid and then saving asynchronisly
+        const { body, timestamp } = messageDto;
+        const messageId = await r.uuid().run(conn);
+        const messageToSave = {
+          id: messageId,
+          body,
+          from: from,
+          to: chat.id,
+          timestamp,
+          created: moment.utc().toDate(),
+        };
+        //Save message to database if standard message
+        this._messagingOperations.saveMessage(messageToSave);
+        //Add typing tag if needed
+        messageToSend = {
+          ...messageToSave,
+          ...(typeof messageDto.typing !== "undefined" && {
+            typing: messageDto.typing,
+          }),
+        };
+      }
+
+      //Send message to receipient one by one in loop
+      receipients.map((receipient) => {
+        if (receipient.connections?.length > 0) {
+          receipient.connections.map((connection) => {
+            //Send message to receipient
+            io.of("/")
+              .sockets.get(connection.id)
+              ?.emit(
+                "message",
+                messageToSend,
+                this.withTimeout(
+                  () => {},
+                  () => {
+                    if (!onlyTyping) {
+                      this.handleOfflineMessage(
+                        messageToSend,
+                        receipient,
+                        from
+                      );
+                    }
+                  },
+                  2000
+                )
+              );
+          });
         } else {
-          userFound = true; //Set that we have found user in user list
-          if (receipient.temp) {
-            this._messagingOperations.joinChatPermanently(chat.id, from);
+          if (!onlyTyping) {
+            this.handleOfflineMessage(messageToSend, receipient, from);
           }
         }
       });
 
-      //If user is not found in chat user list, it means due to some error it was not joined as per the process
-      //Lets create new chat user then, applicable only to MUC chat
-      if (!userFound) {
-        this._messagingOperations.joinChat(chat.id, from);
-      }
+      //Send saved message id back to client, if message is only typing then just run callback with no params
+      onlyTyping ? callback() : callback(messageToSend.id);
+      console.timeEnd("message handler");
+    } catch (error) {
+      callback(null, [error]);
+      logger.error(error);
     }
-
-    let messageToSend: Message;
-    let onlyTyping: boolean = false;
-
-    //Delete typing before saving or do not save if only typing
-    if (
-      typeof messageDto.typing !== "undefined" &&
-      typeof messageDto.body !== "undefined"
-    ) {
-      //Copy message and then delete typing before saving
-      const copy = { ...messageDto };
-      delete copy.typing;
-      //Save message to database
-      const savedMessage = await this._messagingOperations.saveMessage(
-        copy,
-        from,
-        chat.id
-      );
-      messageToSend = { ...messageDto, id: savedMessage.id };
-    } else if (typeof messageDto.typing !== "undefined") {
-      //If only typing do not save message but send it to participants
-      messageToSend = messageDto;
-      onlyTyping = true;
-    } else {
-      //Save message to database if standard message
-      messageToSend = await this._messagingOperations.saveMessage(
-        messageDto,
-        from,
-        chat.id
-      );
-    }
-
-    //Send message to receipient one by one in loop
-    receipients.map((receipient) => {
-      if (receipient.connections?.length > 0) {
-        receipient.connections.map((connection) => {
-          //Send message to receipient
-          io.of("/")
-            .sockets.get(connection.id)
-            ?.emit(
-              "message",
-              messageToSend,
-              this.withTimeout(
-                () => {},
-                () => {
-                  if (!onlyTyping) {
-                    this.handleOfflineMessage(messageToSend, receipient, from);
-                  }
-                },
-                2000
-              )
-            );
-        });
-      } else {
-        if (!onlyTyping) {
-          this.handleOfflineMessage(messageToSend, receipient, from);
-        }
-      }
-    });
-
-    //Send saved message id back to client, if message is only typing then just run callback with no params
-    onlyTyping ? callback() : callback(messageToSend.id);
-    console.timeEnd("message handler");
   };
 
   /**
@@ -405,11 +446,25 @@ export default class MessagingService {
     receipient: Receipient,
     from: string
   ): Promise<void> => {
-    //Handle case when timeout reached
-    //Save message event in database, so this message will be sent when connected
-    this._messagingOperations.saveMessageEvent(message, receipient.user_id);
-    logger.info("User inactive " + receipient.user_id);
-    //TODO: send offline notification
+    try {
+      //Handle case when timeout reached
+      //Save message event in database, so this message will be sent when connected
+      this._messagingOperations.saveMessageEvent(message, receipient.user_id);
+      logger.info("User inactive " + receipient.user_id);
+
+      //If offline message url is provided then push message to external API to send notification
+      if (this._config.offlineMessageUrl) {
+        axios
+          .post<void>(this._config.offlineMessageUrl, {
+            message,
+          })
+          .catch((err) => {
+            logger.error(err);
+          });
+      }
+    } catch (error) {
+      logger.error(error);
+    }
   };
 
   /**
@@ -417,7 +472,8 @@ export default class MessagingService {
    *
    * @param io Server instance
    */
-  initEvents = (): void => {
+  initEvents = (config: AppConfig): void => {
+    this._config = config;
     io.on("connection", this.onConnect);
   };
 }

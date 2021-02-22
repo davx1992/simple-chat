@@ -19,32 +19,20 @@ export class MessagingOperations {
   /**
    * Save message to database
    *
-   * @param message message received from user and we are saving
+   * @param message message object to save
    * @param from user id from which this message received
    */
-  saveMessage = (
-    message: Message,
-    from: string,
-    chatId: string
-  ): Promise<Message> => {
+  saveMessage = (messageToSave: Message): Promise<Message> => {
     return new Promise<Message>(async (resolve, reject) => {
+      console.time("message saved");
       try {
-        const { body, timestamp } = message;
         const savedMessage = await r
           .table("messages")
-          .insert(
-            {
-              body,
-              from: from,
-              to: chatId,
-              timestamp,
-              created: moment.utc().toDate(),
-            },
-            { returnChanges: true }
-          )
+          .insert(messageToSave, { returnChanges: true })
           .run(conn);
-        const insertedMessage = savedMessage.changes[0].new_val;
-        resolve(insertedMessage);
+
+        console.timeEnd("message saved");
+        resolve(savedMessage.changes[0].new_val);
       } catch (err) {
         logger.error(err);
         reject(err);
@@ -171,10 +159,9 @@ export class MessagingOperations {
                 .table("connections")
                 .getAll(chat("user_id"), { index: "user_id" })
                 .coerceTo("array"),
-              state: r.table("users").get(chat("user_id"))("state"),
             };
           })
-          .pluck("connections", "user_id", "state", "temp")
+          .pluck("connections", "user_id", "temp")
           .run(conn)) as Receipient[];
         console.timeEnd("receipient fetch");
 
@@ -282,6 +269,12 @@ export class MessagingOperations {
           .delete()
           .run(conn);
 
+        await r
+          .table("message_event")
+          .getAll(chatId, { index: "chat_id" })
+          .delete()
+          .run(conn);
+
         resolve();
       } catch (err) {
         logger.error(err);
@@ -329,6 +322,7 @@ export class MessagingOperations {
           resolve(messages);
         }
       } catch (err) {
+        logger.error(err);
         reject(err);
       }
     });
@@ -456,6 +450,7 @@ export class MessagingOperations {
               message_id: message.id,
               to: receipient,
               timestamp: now(),
+              chat_id: message.to,
               created: moment.utc().toDate(),
             },
             { returnChanges: true }
