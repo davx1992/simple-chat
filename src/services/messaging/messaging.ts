@@ -105,6 +105,7 @@ export default class MessagingService {
       }
     } catch (error) {
       callback(null, 'Error during archive fetch.');
+      logger.error(error.message);
     }
   };
 

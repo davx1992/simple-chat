@@ -23,14 +23,14 @@ export class MessagingOperations {
    * @param from user id from which this message received
    */
   saveMessage = async (messageToSave: Message): Promise<Message> => {
-    console.time('message saved');
+    // console.time('message saved');
     try {
       const savedMessage = await r
         .table('messages')
         .insert(messageToSave, { returnChanges: true })
         .run(conn);
 
-      console.timeEnd('message saved');
+      // console.timeEnd('message saved');
       return savedMessage.changes[0].new_val;
     } catch (err) {
       logger.error(err);
@@ -46,14 +46,14 @@ export class MessagingOperations {
    */
   loadSUCChat = async (users: string[]): Promise<Chat[]> => {
     try {
-      console.time('load suc chat');
+      // console.time('load suc chat');
       const chat = await r
         .table('chat')
         .filter((chat) => {
           return chat('users').contains(users[0], users[1]);
         })
         .run(conn);
-      console.timeEnd('load suc chat');
+      // console.timeEnd('load suc chat');
       return chat;
     } catch (err) {
       logger.error(err);
@@ -138,7 +138,7 @@ export class MessagingOperations {
    */
   loadMUCUsers = async (chatId: string): Promise<Receipient[]> => {
     try {
-      console.time('receipient fetch');
+      // console.time('receipient fetch');
       const receipients = (await r
         .table('chat_user')
         .getAll(chatId, { index: 'chat_id' })
@@ -152,8 +152,7 @@ export class MessagingOperations {
         })
         .pluck('connections', 'user_id', 'temp')
         .run(conn)) as Receipient[];
-      console.timeEnd('receipient fetch');
-
+      // console.timeEnd('receipient fetch');
       return receipients;
     } catch (err) {
       logger.error(err);
@@ -275,18 +274,22 @@ export class MessagingOperations {
     after?: string
   ): Promise<Message[]> => {
     try {
+      await this.checkIfChatExists(chatId);
       if (after) {
-        const messages = await r
-          .table('messages')
-          .between(
-            [chatId, r.minval],
-            [chatId, r.table('messages').get(after)('timestamp')],
-            { index: 'to_timestamp' }
-          )
-          .orderBy({ index: r.desc('to_timestamp') })
-          .limit(limit)
-          .run(conn);
-        return messages;
+        const afterMessage = await r.table('messages').get(after).run(conn);
+        if (afterMessage) {
+          const messages = await r
+            .table('messages')
+            .between([chatId, r.minval], [chatId, afterMessage('timestamp')], {
+              index: 'to_timestamp',
+            })
+            .orderBy({ index: r.desc('to_timestamp') })
+            .limit(limit)
+            .run(conn);
+          return messages;
+        } else {
+          throw new Error('Message with provided Id do not exist.');
+        }
       } else {
         const messages = await r
           .table('messages')
@@ -298,7 +301,6 @@ export class MessagingOperations {
         return messages;
       }
     } catch (err) {
-      logger.error(err);
       throw new Error(err);
     }
   };
@@ -315,6 +317,7 @@ export class MessagingOperations {
     temp = false
   ): Promise<void> => {
     try {
+      await this.checkIfChatExists(chatId);
       const alreadyJoined: ChatUser[] = await r
         .table('chat_user')
         .filter({
@@ -343,7 +346,6 @@ export class MessagingOperations {
         })
         .run(conn);
     } catch (err) {
-      logger.error(err);
       throw new Error(err);
     }
   };
@@ -356,6 +358,7 @@ export class MessagingOperations {
    */
   leaveChat = async (chatId: string, userId: string): Promise<void> => {
     try {
+      await this.checkIfChatExists(chatId);
       await r
         .table('chat_user')
         .filter({
@@ -365,8 +368,21 @@ export class MessagingOperations {
         .delete()
         .run(conn);
     } catch (err) {
-      logger.error(err);
       throw new Error(err);
+    }
+  };
+
+  /**
+   * Helper function to check if chat exists, will throw error if doesnt exist
+   *
+   * @param chatId chat id which to check
+   */
+  checkIfChatExists = async (chatId: string): Promise<boolean> => {
+    const chatExists = await this.loadChatById(chatId);
+    if (!chatExists) {
+      throw new Error(`Chat ${chatId} do not exist.`);
+    } else {
+      return !!chatExists;
     }
   };
 
@@ -384,6 +400,7 @@ export class MessagingOperations {
     userId: string
   ): Promise<void> => {
     try {
+      await this.checkIfChatExists(chatId);
       await r
         .table('chat_user')
         .filter({
@@ -393,7 +410,6 @@ export class MessagingOperations {
         .update({ temp: false })
         .run(conn);
     } catch (err) {
-      logger.error(err);
       throw new Error(err);
     }
   };
