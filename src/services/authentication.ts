@@ -30,9 +30,9 @@ export default class AuthenticationService {
    * @param socket connection socket instance
    * @param next next function which you can call
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async authMiddleware(
     socket: Socket,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     next: (...args: any[]) => void
   ): Promise<void> {
     const token = socket.handshake.auth['token'];

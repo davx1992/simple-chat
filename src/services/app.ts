@@ -102,7 +102,6 @@ export default class AppService {
       logger.info(`Connections cleared`);
       logger.info(`Connected to database ${host}:${port}/${db}`);
     } catch (error) {
-      logger.error(error);
       throw new Error(error);
     }
   }
@@ -147,7 +146,7 @@ export default class AppService {
         logger.info(`Listening on *:${port}`);
       });
     } catch (error) {
-      logger.error('Error on startup ' + error);
+      logger.error('Error on startup ' + error.message);
     }
   }
 }
