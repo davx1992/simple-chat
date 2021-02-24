@@ -1,14 +1,14 @@
-import { inject, injectable } from "inversify";
-import SERVICE_IDENTIFIER from "../constants/identifiers";
+import { inject, injectable } from 'inversify';
+import SERVICE_IDENTIFIER from '../constants/identifiers';
 import {
   JoinChatDTO,
   LeaveChatDTO,
   NewChatDTO,
   TimeEntity,
-} from "../interfaces/api.interface";
-import { ChatTypes } from "../interfaces/messaging.interface";
-import { MessagingOperations } from "./messaging/operations";
-import moment from "moment";
+} from '../interfaces/api.interface';
+import { ChatTypes } from '../interfaces/messaging.interface';
+import { MessagingOperations } from './messaging/operations';
+import moment from 'moment';
 
 @injectable()
 export class ApiService {
@@ -99,17 +99,14 @@ export class ApiService {
    *
    * @param chatIds chat ids array to delete
    */
-  deleteChats(chatIds: string[]): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        const deletePromises = chatIds.map(async (chatId) => {
-          return await this._messagingOperations.deleteChat(chatId);
-        });
-        await Promise.all(deletePromises);
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
+  async deleteChats(chatIds: string[]): Promise<void> {
+    try {
+      const deletePromises = chatIds.map(async (chatId) => {
+        return await this._messagingOperations.deleteChat(chatId);
+      });
+      await Promise.all(deletePromises);
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 }

@@ -3,18 +3,18 @@ import {
   Message,
   Receipient,
   ValidationError,
-} from "../../interfaces/messaging.interface";
-import { Socket } from "socket.io";
-import { logger } from "../../constants/logger";
-import { inject, injectable } from "inversify";
-import { conn, io } from "../app";
-import { validate } from "class-validator";
-import { MessagingOperations } from "./operations";
-import SERVICE_IDENTIFIER from "../../constants/identifiers";
-import axios from "axios";
-import { AppConfig } from "../../interfaces/app.interface";
-import { r } from "rethinkdb-ts";
-import moment from "moment";
+} from '../../interfaces/messaging.interface';
+import { Socket } from 'socket.io';
+import { logger } from '../../constants/logger';
+import { inject, injectable } from 'inversify';
+import { conn, io } from '../app';
+import { validate } from 'class-validator';
+import { MessagingOperations } from './operations';
+import SERVICE_IDENTIFIER from '../../constants/identifiers';
+import axios from 'axios';
+import { AppConfig } from '../../interfaces/app.interface';
+import { r } from 'rethinkdb-ts';
+import moment from 'moment';
 
 @injectable()
 export default class MessagingService {
@@ -35,20 +35,20 @@ export default class MessagingService {
    */
   onConnect = (socket: Socket): void => {
     try {
-      const userId = socket.handshake.auth["userId"];
+      const userId = socket.handshake.auth['userId'];
 
       this._messagingOperations.saveUser(userId);
       this._messagingOperations.saveConnection(userId, socket.id);
 
-      logger.info("Connected " + socket.id + " " + userId);
+      logger.info('Connected ' + socket.id + ' ' + userId);
 
       //Socket event initialization
-      socket.on("message", this.onMessage.bind(null, socket));
-      socket.on("create_chat", this.onCreateChat.bind(null, socket));
-      socket.on("join_chat", this.onJoinChat.bind(null, socket));
-      socket.on("leave_chat", this.onLeaveChat.bind(null, socket));
-      socket.on("disconnect", this.onDisconnect.bind(null, socket));
-      socket.on("load_archive", this.onLoadArchive.bind(null, socket));
+      socket.on('message', this.onMessage.bind(null, socket));
+      socket.on('create_chat', this.onCreateChat.bind(null, socket));
+      socket.on('join_chat', this.onJoinChat.bind(null, socket));
+      socket.on('leave_chat', this.onLeaveChat.bind(null, socket));
+      socket.on('disconnect', this.onDisconnect.bind(null, socket));
+      socket.on('load_archive', this.onLoadArchive.bind(null, socket));
 
       //Send undelivered messages
       this._messagingOperations
@@ -57,7 +57,7 @@ export default class MessagingService {
           undeliveredMessages.map((message) => {
             //Send message to just connected user
             socket.emit(
-              "message",
+              'message',
               message.right,
               this.withTimeout(
                 () => {
@@ -68,7 +68,7 @@ export default class MessagingService {
                   );
                 },
                 () => {
-                  logger.error("timeout on message " + userId);
+                  logger.error('timeout on message ' + userId);
                 },
                 2000
               )
@@ -91,7 +91,7 @@ export default class MessagingService {
     limit: number,
     after: string = null,
     callback: (messages?: Message[], error?: string) => void
-  ) => {
+  ): Promise<void> => {
     try {
       if (chatId && limit) {
         const messages = await this._messagingOperations.loadArchive(
@@ -101,10 +101,10 @@ export default class MessagingService {
         );
         callback(messages);
       } else {
-        callback(null, "No chat Id or limit promvided.");
+        callback(null, 'No chat Id or limit promvided.');
       }
     } catch (error) {
-      callback(null, "Error during archive fetch.");
+      callback(null, 'Error during archive fetch.');
     }
   };
 
@@ -115,12 +115,12 @@ export default class MessagingService {
    */
   onDisconnect = async (socket: Socket): Promise<void> => {
     try {
-      const userId = socket.handshake.auth["userId"];
+      const userId = socket.handshake.auth['userId'];
 
       this._messagingOperations.deleteTempJoins(userId);
       this._messagingOperations.deleteConnection(socket.id);
 
-      logger.info("Disconnected " + userId);
+      logger.info('Disconnected ' + userId);
     } catch (error) {
       logger.error(error);
     }
@@ -136,18 +136,18 @@ export default class MessagingService {
   onJoinChat = async (
     socket: Socket,
     chatId: string,
-    temp: boolean = false,
+    temp = false,
     callback: (success: boolean, error?: string) => void
-  ) => {
+  ): Promise<void> => {
     try {
-      const from: string = socket.handshake.auth["userId"];
+      const from: string = socket.handshake.auth['userId'];
 
       if (chatId) {
         await this._messagingOperations.joinChat(chatId, from, temp);
         callback(true);
       } else {
-        logger.error("No chat Id provided.");
-        callback(false, "No chat Id provided.");
+        logger.error('No chat Id provided.');
+        callback(false, 'No chat Id provided.');
       }
     } catch (error) {
       logger.error(error);
@@ -165,15 +165,15 @@ export default class MessagingService {
     socket: Socket,
     chatId: string,
     callback: (success: boolean, error?: string) => void
-  ) => {
+  ): Promise<void> => {
     try {
-      const from: string = socket.handshake.auth["userId"];
+      const from: string = socket.handshake.auth['userId'];
       if (chatId) {
         await this._messagingOperations.leaveChat(chatId, from);
         callback(true);
       } else {
-        logger.error("No chat Id provided.");
-        callback(false, "No chat Id provided.");
+        logger.error('No chat Id provided.');
+        callback(false, 'No chat Id provided.');
       }
     } catch (error) {
       logger.error(error);
@@ -194,19 +194,19 @@ export default class MessagingService {
     callback: (chatId?: string, error?: string) => void
   ): Promise<void> => {
     try {
-      const from: string = socket.handshake.auth["userId"];
+      const from: string = socket.handshake.auth['userId'];
       if (type === ChatTypes.SUC) {
         if (users.length === 2) {
           //Validate user list if it is having two people and one of them is sender
           const receipient = users.find((user) => user !== from);
           if (!receipient) {
-            logger.error("User list should contain creator and receipient");
-            callback(null, "User list should contain creator and receipient");
+            logger.error('User list should contain creator and receipient');
+            callback(null, 'User list should contain creator and receipient');
             return;
           }
         } else {
-          logger.error("Only two users should be provided for SUC chat");
-          callback(null, "Only two users should be provided for SUC chat");
+          logger.error('Only two users should be provided for SUC chat');
+          callback(null, 'Only two users should be provided for SUC chat');
           return;
         }
 
@@ -249,7 +249,11 @@ export default class MessagingService {
    * @param onTimeout when client do not reply within timeout, this function will be called
    * @param timeout timeout how much time to wait for acknowledgment in miliseconds
    */
-  withTimeout = (onSuccess, onTimeout, timeout) => {
+  withTimeout = (
+    onSuccess: (...args: any[]) => void,
+    onTimeout: () => void,
+    timeout: number
+  ): ((...args: any[]) => void) => {
     let called = false;
 
     const timer = setTimeout(() => {
@@ -264,8 +268,10 @@ export default class MessagingService {
       if (called) return;
       called = true;
       clearTimeout(timer);
-      //Apply passed argument to success functio
-      onSuccess.apply(null, args);
+
+      if (onSuccess) {
+        onSuccess(...args);
+      }
     };
   };
 
@@ -282,7 +288,7 @@ export default class MessagingService {
     callback: (messageId?: string, error?: ValidationError[]) => void
   ): Promise<void> => {
     try {
-      console.time("message handler");
+      console.time('message handler');
       const messageDto = Object.assign(new Message(), message);
 
       //Validate against DTO
@@ -296,19 +302,19 @@ export default class MessagingService {
             error: JSON.stringify(err.constraints),
           };
         });
-        logger.error("validation failed. errors: " + JSON.stringify(error));
+        logger.error('validation failed. errors: ' + JSON.stringify(error));
         callback(null, error);
         return;
       }
 
-      const from: string = socket.handshake.auth["userId"];
+      const from: string = socket.handshake.auth['userId'];
       const chat = await this._messagingOperations.loadChatById(messageDto.to);
 
       //If chat do not exist then throw an error. Chat should exist when sending message
       if (!chat) {
         const error = {
-          field: "to",
-          error: "Chat do not exist, please create new chat.",
+          field: 'to',
+          error: 'Chat do not exist, please create new chat.',
         };
         logger.error(JSON.stringify(error));
         callback(null, [error]);
@@ -331,7 +337,7 @@ export default class MessagingService {
         const result = await this._messagingOperations.loadMUCUsers(chat.id);
 
         //Used to understand if user is saved to chat users, otherwise will create new record
-        let userFound: boolean = false;
+        let userFound = false;
 
         //Get user connection list
         result.map((receipient) => {
@@ -357,12 +363,12 @@ export default class MessagingService {
       }
 
       let messageToSend: Message;
-      let onlyTyping: boolean = false;
+      let onlyTyping = false;
 
       //If sending typing then do not save message
       if (
-        typeof messageDto.typing !== "undefined" &&
-        typeof messageDto.body === "undefined"
+        typeof messageDto.typing !== 'undefined' &&
+        typeof messageDto.body === 'undefined'
       ) {
         //If only typing do not save message but send it to participants
         messageToSend = messageDto;
@@ -387,7 +393,7 @@ export default class MessagingService {
         //Add typing tag if needed
         messageToSend = {
           ...messageToSave,
-          ...(typeof messageDto.typing !== "undefined" && {
+          ...(typeof messageDto.typing !== 'undefined' && {
             typing: messageDto.typing,
           }),
         };
@@ -398,20 +404,16 @@ export default class MessagingService {
         if (receipient.connections?.length > 0) {
           receipient.connections.map((connection) => {
             //Send message to receipient
-            io.of("/")
+            io.of('/')
               .sockets.get(connection.id)
               ?.emit(
-                "message",
+                'message',
                 messageToSend,
                 this.withTimeout(
-                  () => {},
+                  null,
                   () => {
                     if (!onlyTyping) {
-                      this.handleOfflineMessage(
-                        messageToSend,
-                        receipient,
-                        from
-                      );
+                      this.handleOfflineMessage(messageToSend, receipient);
                     }
                   },
                   2000
@@ -420,14 +422,14 @@ export default class MessagingService {
           });
         } else {
           if (!onlyTyping) {
-            this.handleOfflineMessage(messageToSend, receipient, from);
+            this.handleOfflineMessage(messageToSend, receipient);
           }
         }
       });
 
       //Send saved message id back to client, if message is only typing then just run callback with no params
       onlyTyping ? callback() : callback(messageToSend.id);
-      console.timeEnd("message handler");
+      console.timeEnd('message handler');
     } catch (error) {
       callback(null, [error]);
       logger.error(error);
@@ -443,14 +445,13 @@ export default class MessagingService {
    */
   handleOfflineMessage = async (
     message: Message,
-    receipient: Receipient,
-    from: string
+    receipient: Receipient
   ): Promise<void> => {
     try {
       //Handle case when timeout reached
       //Save message event in database, so this message will be sent when connected
       this._messagingOperations.saveMessageEvent(message, receipient.user_id);
-      logger.info("User inactive " + receipient.user_id);
+      logger.info('User inactive ' + receipient.user_id);
 
       //If offline message url is provided then push message to external API to send notification
       if (this._config.offlineMessageUrl) {
@@ -474,6 +475,6 @@ export default class MessagingService {
    */
   initEvents = (config: AppConfig): void => {
     this._config = config;
-    io.on("connection", this.onConnect);
+    io.on('connection', this.onConnect);
   };
 }

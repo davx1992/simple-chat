@@ -4,11 +4,10 @@ import {
   httpPost,
   queryParam,
   request,
-  requestParam,
   response,
-} from "inversify-express-utils";
-import * as express from "express";
-import { ValidateBody, ValidateQuery } from "../decorators/validate.decorator";
+} from 'inversify-express-utils';
+import * as express from 'express';
+import { ValidateBody, ValidateQuery } from '../decorators/validate.decorator';
 import {
   DeleteChatsDTO,
   JoinChatDTO,
@@ -16,14 +15,14 @@ import {
   LoadInactiveChatListDTO,
   NewChatDTO,
   TimeEntity,
-} from "../interfaces/api.interface";
-import SERVICE_IDENTIFIER from "../constants/identifiers";
-import { inject } from "inversify";
-import { ChatTypes } from "../interfaces/messaging.interface";
-import { logger } from "../constants/logger";
-import { ApiService } from "../services/api";
+} from '../interfaces/api.interface';
+import SERVICE_IDENTIFIER from '../constants/identifiers';
+import { inject } from 'inversify';
+import { ChatTypes } from '../interfaces/messaging.interface';
+import { logger } from '../constants/logger';
+import { ApiService } from '../services/api';
 
-@controller("/api")
+@controller('/api')
 export default class ApiController {
   constructor(
     @inject(SERVICE_IDENTIFIER.API)
@@ -41,7 +40,7 @@ export default class ApiController {
    * @param req express request object
    * @param res express response object
    */
-  @httpPost("/chat/create")
+  @httpPost('/chat/create')
   @ValidateBody(NewChatDTO)
   private async createChat(
     @request() req: express.Request,
@@ -56,16 +55,16 @@ export default class ApiController {
         //Validate user list if it is having two people and one of them is sender
         const receipient = users.find((user) => user !== userId);
         if (!receipient) {
-          logger.error("User list should contain creator and receipient");
+          logger.error('User list should contain creator and receipient');
           res.status(400).json({
-            error: "User list should contain creator and receipient",
+            error: 'User list should contain creator and receipient',
           });
           return;
         }
       } else {
-        logger.error("Only two users should be provided for SUC chat");
+        logger.error('Only two users should be provided for SUC chat');
         res.status(400).json({
-          error: "Only two users should be provided for SUC chat",
+          error: 'Only two users should be provided for SUC chat',
         });
         return;
       }
@@ -91,7 +90,7 @@ export default class ApiController {
    * @param req express request object
    * @param res express response object
    */
-  @httpPost("/chat/join")
+  @httpPost('/chat/join')
   @ValidateBody(JoinChatDTO)
   private async joinChat(
     @request() req: express.Request,
@@ -117,7 +116,7 @@ export default class ApiController {
    * @param req express request object
    * @param res express response object
    */
-  @httpPost("/chat/leave")
+  @httpPost('/chat/leave')
   @ValidateBody(LeaveChatDTO)
   private async leaveChat(
     @request() req: express.Request,
@@ -141,11 +140,11 @@ export default class ApiController {
    * @param timeEntity entity of time - days, months, minutes, weeks, seconds
    * @param res express response object
    */
-  @httpGet("/chat/inactive")
+  @httpGet('/chat/inactive')
   @ValidateQuery(LoadInactiveChatListDTO)
   private async loadInactiveChats(
-    @queryParam("old") old: number,
-    @queryParam("entity") timeEntity: TimeEntity,
+    @queryParam('old') old: number,
+    @queryParam('entity') timeEntity: TimeEntity,
     @response() res: express.Response
   ): Promise<string[]> {
     try {
@@ -155,7 +154,7 @@ export default class ApiController {
     }
   }
 
-  @httpPost("/chat/delete")
+  @httpPost('/chat/delete')
   @ValidateBody(DeleteChatsDTO)
   private async deleteChats(
     @request() req: express.Request,

@@ -1,8 +1,8 @@
-import { inject, injectable } from "inversify";
-import { Socket } from "socket.io";
-import axios from "axios";
-import { logger } from "../constants/logger";
-import { io } from "./app";
+import { injectable } from 'inversify';
+import { Socket } from 'socket.io';
+import axios from 'axios';
+import { logger } from '../constants/logger';
+import { io } from './app';
 
 @injectable()
 export default class AuthenticationService {
@@ -30,24 +30,28 @@ export default class AuthenticationService {
    * @param socket connection socket instance
    * @param next next function which you can call
    */
-  async authMiddleware(socket: Socket, next): Promise<void> {
-    const token = socket.handshake.auth["token"];
-    const userId = socket.handshake.auth["userId"];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async authMiddleware(
+    socket: Socket,
+    next: (...args: any[]) => void
+  ): Promise<void> {
+    const token = socket.handshake.auth['token'];
+    const userId = socket.handshake.auth['userId'];
 
     if (token && userId) {
       try {
         const verified = await this.authenticate(token);
         if (verified) {
-          logger.info("Authenticated.");
+          logger.info('Authenticated.');
           next();
         } else {
-          next(new Error("Unauthorized."));
+          next(new Error('Unauthorized.'));
         }
       } catch (err) {
-        next(new Error("Error during authentication."));
+        next(new Error('Error during authentication.'));
       }
     } else {
-      next(new Error("Not all details provided."));
+      next(new Error('Not all details provided.'));
     }
   }
 
@@ -56,7 +60,7 @@ export default class AuthenticationService {
    *
    * @param token authentication token
    */
-  authenticate(token: string) {
+  authenticate(token: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       axios
         .post<{ verified: boolean }>(this._url, {
@@ -71,7 +75,7 @@ export default class AuthenticationService {
           }
         })
         .catch((err) => {
-          logger.error("Error during authentication " + err);
+          logger.error('Error during authentication ' + err);
           reject(err);
         });
     });

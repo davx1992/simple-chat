@@ -5,14 +5,14 @@ import {
   Message,
   MessageEvent,
   Receipient,
-} from "../../interfaces/messaging.interface";
-import { now } from "lodash";
-import moment from "moment";
-import { injectable } from "inversify";
-import { logger } from "../../constants/logger";
-import { conn } from "../app";
-import { JoinResult, r } from "rethinkdb-ts";
-import { User } from "../../interfaces/authentication.interface";
+} from '../../interfaces/messaging.interface';
+import { now } from 'lodash';
+import moment from 'moment';
+import { injectable } from 'inversify';
+import { logger } from '../../constants/logger';
+import { conn } from '../app';
+import { JoinResult, r } from 'rethinkdb-ts';
+import { User } from '../../interfaces/authentication.interface';
 
 @injectable()
 export class MessagingOperations {
@@ -22,22 +22,20 @@ export class MessagingOperations {
    * @param message message object to save
    * @param from user id from which this message received
    */
-  saveMessage = (messageToSave: Message): Promise<Message> => {
-    return new Promise<Message>(async (resolve, reject) => {
-      console.time("message saved");
-      try {
-        const savedMessage = await r
-          .table("messages")
-          .insert(messageToSave, { returnChanges: true })
-          .run(conn);
+  saveMessage = async (messageToSave: Message): Promise<Message> => {
+    console.time('message saved');
+    try {
+      const savedMessage = await r
+        .table('messages')
+        .insert(messageToSave, { returnChanges: true })
+        .run(conn);
 
-        console.timeEnd("message saved");
-        resolve(savedMessage.changes[0].new_val);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+      console.timeEnd('message saved');
+      return savedMessage.changes[0].new_val;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -46,23 +44,21 @@ export class MessagingOperations {
    *
    * @param users should contain two users which are having SUC
    */
-  loadSUCChat = (users: string[]): Promise<Chat[]> => {
-    return new Promise<Chat[]>(async (resolve, reject) => {
-      try {
-        console.time("load suc chat");
-        const chat = await r
-          .table("chat")
-          .filter((chat) => {
-            return chat("users").contains(users[0], users[1]);
-          })
-          .run(conn);
-        console.timeEnd("load suc chat");
-        resolve(chat);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  loadSUCChat = async (users: string[]): Promise<Chat[]> => {
+    try {
+      console.time('load suc chat');
+      const chat = await r
+        .table('chat')
+        .filter((chat) => {
+          return chat('users').contains(users[0], users[1]);
+        })
+        .run(conn);
+      console.timeEnd('load suc chat');
+      return chat;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -71,16 +67,14 @@ export class MessagingOperations {
    *
    * @param users should contain two users which are having SUC
    */
-  loadChatById = (chatId: string): Promise<Chat> => {
-    return new Promise<Chat>(async (resolve, reject) => {
-      try {
-        const chat = await r.table("chat").get(chatId).run(conn);
-        resolve(chat);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  loadChatById = async (chatId: string): Promise<Chat> => {
+    try {
+      const chat = await r.table('chat').get(chatId).run(conn);
+      return chat;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -89,16 +83,14 @@ export class MessagingOperations {
    *
    * @param userId user id to load
    */
-  loadUser = (userId: string): Promise<User[]> => {
-    return new Promise<User[]>(async (resolve, reject) => {
-      try {
-        const user = await r.table("users").get(userId).run(conn);
-        resolve(user);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  loadUser = async (userId: string): Promise<User[]> => {
+    try {
+      const user = await r.table('users').get(userId).run(conn);
+      return user;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -108,33 +100,31 @@ export class MessagingOperations {
    * @param userId receipient user id
    * @param chatId SUC chat id
    */
-  loadSUCUser = (userId: string): Promise<Receipient> => {
-    return new Promise<Receipient>(async (resolve, reject) => {
-      try {
-        const receipient = (await r
-          .table("users")
-          .get(userId)
-          .merge(function (user) {
-            return {
-              connections: r
-                .table("connections")
-                .getAll(user("id"), { index: "user_id" })
-                .coerceTo("array"),
-            };
-          })
-          .pluck("connections", "id", "state")
-          .merge({
-            user_id: r.row("id"),
-          })
-          .without("id")
-          .run(conn)) as Receipient;
+  loadSUCUser = async (userId: string): Promise<Receipient> => {
+    try {
+      const receipient = (await r
+        .table('users')
+        .get(userId)
+        .merge(function (user) {
+          return {
+            connections: r
+              .table('connections')
+              .getAll(user('id'), { index: 'user_id' })
+              .coerceTo('array'),
+          };
+        })
+        .pluck('connections', 'id', 'state')
+        .merge({
+          user_id: r.row('id'),
+        })
+        .without('id')
+        .run(conn)) as Receipient;
 
-        resolve(receipient);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+      return receipient;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -146,31 +136,29 @@ export class MessagingOperations {
    * @param chatId id of chat for which to search
    * @param exclude id of user whom to exclude from query
    */
-  loadMUCUsers = (chatId: string): Promise<Receipient[]> => {
-    return new Promise<Receipient[]>(async (resolve, reject) => {
-      try {
-        console.time("receipient fetch");
-        const receipients = (await r
-          .table("chat_user")
-          .getAll(chatId, { index: "chat_id" })
-          .merge(function (chat) {
-            return {
-              connections: r
-                .table("connections")
-                .getAll(chat("user_id"), { index: "user_id" })
-                .coerceTo("array"),
-            };
-          })
-          .pluck("connections", "user_id", "temp")
-          .run(conn)) as Receipient[];
-        console.timeEnd("receipient fetch");
+  loadMUCUsers = async (chatId: string): Promise<Receipient[]> => {
+    try {
+      console.time('receipient fetch');
+      const receipients = (await r
+        .table('chat_user')
+        .getAll(chatId, { index: 'chat_id' })
+        .merge(function (chat) {
+          return {
+            connections: r
+              .table('connections')
+              .getAll(chat('user_id'), { index: 'user_id' })
+              .coerceTo('array'),
+          };
+        })
+        .pluck('connections', 'user_id', 'temp')
+        .run(conn)) as Receipient[];
+      console.timeEnd('receipient fetch');
 
-        resolve(receipients);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+      return receipients;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -182,33 +170,31 @@ export class MessagingOperations {
    * @param creator id of user who created the chat
    * @param users users list who are participants of the chat
    */
-  createChat = (
+  createChat = async (
     type: ChatTypes,
     creator: string,
     users?: string[]
   ): Promise<string> => {
-    return new Promise<string>(async (resolve, reject) => {
-      try {
-        const savedChat = await r
-          .table("chat")
-          .insert(
-            {
-              type: type,
-              timestamp: now(),
-              created: moment.utc().toDate(),
-              creator,
-              ...(users && { users }),
-            },
-            { returnChanges: true }
-          )
-          .run(conn);
-        const createdChat = savedChat.changes[0].new_val;
-        resolve(createdChat.id);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+    try {
+      const savedChat = await r
+        .table('chat')
+        .insert(
+          {
+            type: type,
+            timestamp: now(),
+            created: moment.utc().toDate(),
+            creator,
+            ...(users && { users }),
+          },
+          { returnChanges: true }
+        )
+        .run(conn);
+      const createdChat = savedChat.changes[0].new_val;
+      return createdChat.id;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -219,32 +205,30 @@ export class MessagingOperations {
    *
    * @param timestamp from which time to consider chat as inactive  - from timestamp
    */
-  loadInactiveChats = (timestamp: number): Promise<string[]> => {
-    return new Promise<string[]>(async (resolve, reject) => {
-      try {
-        const chatIds = await r
-          .table("chat")
-          .filter((chat) => {
-            return r.and(
-              r
-                .db("simple_chat")
-                .table("messages")
-                .between([chat("id"), timestamp], [chat("id"), r.maxval], {
-                  index: "to_timestamp",
-                })
-                .isEmpty(),
-              chat("timestamp").le(timestamp)
-            );
-          })("id")
-          .coerceTo("array")
-          .run(conn);
+  loadInactiveChats = async (timestamp: number): Promise<string[]> => {
+    try {
+      const chatIds = await r
+        .table('chat')
+        .filter((chat) => {
+          return r.and(
+            r
+              .db('simple_chat')
+              .table('messages')
+              .between([chat('id'), timestamp], [chat('id'), r.maxval], {
+                index: 'to_timestamp',
+              })
+              .isEmpty(),
+            chat('timestamp').le(timestamp)
+          );
+        })('id')
+        .coerceTo('array')
+        .run(conn);
 
-        resolve(chatIds);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+      return chatIds;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -252,35 +236,28 @@ export class MessagingOperations {
    *
    * @param chatId id of the chat to delete
    */
-  deleteChat = (chatId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await r.table("chat").get(chatId).delete().run(conn);
-
-        await r
-          .table("chat_user")
-          .getAll(chatId, { index: "chat_id" })
-          .delete()
-          .run(conn);
-
-        await r
-          .table("messages")
-          .getAll(chatId, { index: "to" })
-          .delete()
-          .run(conn);
-
-        await r
-          .table("message_event")
-          .getAll(chatId, { index: "chat_id" })
-          .delete()
-          .run(conn);
-
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  deleteChat = async (chatId: string): Promise<void> => {
+    try {
+      await r.table('chat').get(chatId).delete().run(conn);
+      await r
+        .table('chat_user')
+        .getAll(chatId, { index: 'chat_id' })
+        .delete()
+        .run(conn);
+      await r
+        .table('messages')
+        .getAll(chatId, { index: 'to' })
+        .delete()
+        .run(conn);
+      await r
+        .table('message_event')
+        .getAll(chatId, { index: 'chat_id' })
+        .delete()
+        .run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -292,40 +269,38 @@ export class MessagingOperations {
    * @param chatId id of the chat from which fetch archive
    * @param after after which message id to fetch archive
    */
-  loadArchive = (
+  loadArchive = async (
     limit: number,
     chatId: string,
     after?: string
   ): Promise<Message[]> => {
-    return new Promise<Message[]>(async (resolve, reject) => {
-      try {
-        if (after) {
-          const messages = await r
-            .table("messages")
-            .between(
-              [chatId, r.minval],
-              [chatId, r.table("messages").get(after)("timestamp")],
-              { index: "to_timestamp" }
-            )
-            .orderBy({ index: r.desc("to_timestamp") })
-            .limit(limit)
-            .run(conn);
-          resolve(messages);
-        } else {
-          const messages = await r
-            .table("messages")
-            .orderBy({ index: r.desc("timestamp") })
-            .filter({ to: chatId })
-            .limit(limit)
-            .run(conn);
+    try {
+      if (after) {
+        const messages = await r
+          .table('messages')
+          .between(
+            [chatId, r.minval],
+            [chatId, r.table('messages').get(after)('timestamp')],
+            { index: 'to_timestamp' }
+          )
+          .orderBy({ index: r.desc('to_timestamp') })
+          .limit(limit)
+          .run(conn);
+        return messages;
+      } else {
+        const messages = await r
+          .table('messages')
+          .orderBy({ index: r.desc('timestamp') })
+          .filter({ to: chatId })
+          .limit(limit)
+          .run(conn);
 
-          resolve(messages);
-        }
-      } catch (err) {
-        logger.error(err);
-        reject(err);
+        return messages;
       }
-    });
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -334,47 +309,43 @@ export class MessagingOperations {
    * @param chatId id of chat to which user wants to join
    * @param userId id of user which is joining the chat
    */
-  joinChat = (
+  joinChat = async (
     chatId: string,
     userId: string,
-    temp: boolean = false
+    temp = false
   ): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        const alreadyJoined: ChatUser[] = await r
-          .table("chat_user")
-          .filter({
-            chat_id: chatId,
-            user_id: userId,
-          })
-          .run(conn);
+    try {
+      const alreadyJoined: ChatUser[] = await r
+        .table('chat_user')
+        .filter({
+          chat_id: chatId,
+          user_id: userId,
+        })
+        .run(conn);
 
-        if (alreadyJoined.length > 0) {
-          //If current Chat user is saved with temp flag,
-          //but current request is without this flag, then join permanently
-          if (alreadyJoined[0].temp && !temp) {
-            await this.joinChatPermanently(chatId, userId);
-          }
-          resolve();
-          return;
+      if (alreadyJoined.length > 0) {
+        //If current Chat user is saved with temp flag,
+        //but current request is without this flag, then join permanently
+        if (alreadyJoined[0].temp && !temp) {
+          await this.joinChatPermanently(chatId, userId);
         }
-
-        await r
-          .table("chat_user")
-          .insert({
-            chat_id: chatId,
-            user_id: userId,
-            timestamp: now(),
-            created: moment.utc().toDate(),
-            temp,
-          })
-          .run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
+        return;
       }
-    });
+
+      await r
+        .table('chat_user')
+        .insert({
+          chat_id: chatId,
+          user_id: userId,
+          timestamp: now(),
+          created: moment.utc().toDate(),
+          temp,
+        })
+        .run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -383,23 +354,20 @@ export class MessagingOperations {
    * @param chatId id of chat to which user wants to join
    * @param userId id of user which is joining the chat
    */
-  leaveChat = (chatId: string, userId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await r
-          .table("chat_user")
-          .filter({
-            chat_id: chatId,
-            user_id: userId,
-          })
-          .delete()
-          .run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  leaveChat = async (chatId: string, userId: string): Promise<void> => {
+    try {
+      await r
+        .table('chat_user')
+        .filter({
+          chat_id: chatId,
+          user_id: userId,
+        })
+        .delete()
+        .run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -411,23 +379,23 @@ export class MessagingOperations {
    * @param chatId id of chat to which user wants to join
    * @param userId id of user which is joining the chat
    */
-  joinChatPermanently = (chatId: string, userId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await r
-          .table("chat_user")
-          .filter({
-            chat_id: chatId,
-            user_id: userId,
-          })
-          .update({ temp: false })
-          .run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  joinChatPermanently = async (
+    chatId: string,
+    userId: string
+  ): Promise<void> => {
+    try {
+      await r
+        .table('chat_user')
+        .filter({
+          chat_id: chatId,
+          user_id: userId,
+        })
+        .update({ temp: false })
+        .run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -437,32 +405,30 @@ export class MessagingOperations {
    * @param message message received and we and which will be sent to receipient
    * @param receipient receipient to whom this message will be forwarded
    */
-  saveMessageEvent = (
+  saveMessageEvent = async (
     message: Message,
     receipient: string
   ): Promise<MessageEvent> => {
-    return new Promise<MessageEvent>(async (resolve, reject) => {
-      try {
-        const messageEvent = await r
-          .table("message_event")
-          .insert(
-            {
-              message_id: message.id,
-              to: receipient,
-              timestamp: now(),
-              chat_id: message.to,
-              created: moment.utc().toDate(),
-            },
-            { returnChanges: true }
-          )
-          .run(conn);
-        const insertedEvent = messageEvent.changes[0].new_val;
-        resolve(insertedEvent);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+    try {
+      const messageEvent = await r
+        .table('message_event')
+        .insert(
+          {
+            message_id: message.id,
+            to: receipient,
+            timestamp: now(),
+            chat_id: message.to,
+            created: moment.utc().toDate(),
+          },
+          { returnChanges: true }
+        )
+        .run(conn);
+      const insertedEvent = messageEvent.changes[0].new_val;
+      return insertedEvent;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -471,23 +437,21 @@ export class MessagingOperations {
    * @param messageId id of message which were received by user
    * @param userId user id which received message
    */
-  deleteAcknowledgedMessageEvent = (
+  deleteAcknowledgedMessageEvent = async (
     messageId: string,
     userId: string
   ): Promise<boolean> => {
-    return new Promise<boolean>(async (resolve, reject) => {
-      try {
-        const messageEvent = await r
-          .table("message_event")
-          .getAll([userId, messageId], { index: "to_message_id" })
-          .delete()
-          .run(conn);
-        resolve(messageEvent.deleted > 0);
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+    try {
+      const messageEvent = await r
+        .table('message_event')
+        .getAll([userId, messageId], { index: 'to_message_id' })
+        .delete()
+        .run(conn);
+      return messageEvent.deleted > 0;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -496,29 +460,24 @@ export class MessagingOperations {
    *
    * @param userId id of user for which to load events
    */
-  loadMessageEvents = (
+  loadMessageEvents = async (
     userId: string
   ): Promise<JoinResult<MessageEvent, Message>[]> => {
-    return new Promise<JoinResult<MessageEvent, Message>[]>(
-      async (resolve, reject) => {
-        try {
-          const messageEvents = await r
-            .table("message_event")
-            .between(
-              [userId, r.minval, r.minval],
-              [userId, r.maxval, r.maxval],
-              { index: "to_message_id_timestamp", rightBound: "closed" }
-            )
-            .orderBy({ index: r.desc("to_message_id_timestamp") })
-            .eqJoin("message_id", r.table("messages"))
-            .run(conn);
-          resolve(messageEvents);
-        } catch (err) {
-          logger.error(err);
-          reject(err);
-        }
-      }
-    );
+    try {
+      const messageEvents = await r
+        .table('message_event')
+        .between([userId, r.minval, r.minval], [userId, r.maxval, r.maxval], {
+          index: 'to_message_id_timestamp',
+          rightBound: 'closed',
+        })
+        .orderBy({ index: r.desc('to_message_id_timestamp') })
+        .eqJoin('message_id', r.table('messages'))
+        .run(conn);
+      return messageEvents;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -526,20 +485,17 @@ export class MessagingOperations {
    *
    * @param userId id of user which to update
    */
-  deleteTempJoins = (userId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await r
-          .table("chat_user")
-          .filter({ user_id: userId, temp: true })
-          .delete()
-          .run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  deleteTempJoins = async (userId: string): Promise<void> => {
+    try {
+      await r
+        .table('chat_user')
+        .filter({ user_id: userId, temp: true })
+        .delete()
+        .run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -547,25 +503,22 @@ export class MessagingOperations {
    *
    * @param userId user id which to save - this will be primary key
    */
-  saveUser = (userId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        r.table("users")
-          .insert(
-            {
-              id: userId,
-              last_login_timestamp: now(),
-              last_login: moment.utc().toDate(),
-            },
-            { conflict: "update" }
-          )
-          .run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  saveUser = async (userId: string): Promise<void> => {
+    try {
+      r.table('users')
+        .insert(
+          {
+            id: userId,
+            last_login_timestamp: now(),
+            last_login: moment.utc().toDate(),
+          },
+          { conflict: 'update' }
+        )
+        .run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -574,24 +527,21 @@ export class MessagingOperations {
    * @param userId user id which to save - this will be primary key
    * @param socketId socket id of connection of user
    */
-  saveConnection = (userId: string, socketId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await r
-          .table("connections")
-          .insert({
-            id: socketId,
-            timestamp: now(),
-            created: moment.utc().toDate(),
-            user_id: userId,
-          })
-          .run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  saveConnection = async (userId: string, socketId: string): Promise<void> => {
+    try {
+      await r
+        .table('connections')
+        .insert({
+          id: socketId,
+          timestamp: now(),
+          created: moment.utc().toDate(),
+          user_id: userId,
+        })
+        .run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 
   /**
@@ -599,15 +549,12 @@ export class MessagingOperations {
    *
    * @param socketId socket id which to delete
    */
-  deleteConnection = (socketId: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await r.table("connections").get(socketId).delete().run(conn);
-        resolve();
-      } catch (err) {
-        logger.error(err);
-        reject(err);
-      }
-    });
+  deleteConnection = async (socketId: string): Promise<void> => {
+    try {
+      await r.table('connections').get(socketId).delete().run(conn);
+    } catch (err) {
+      logger.error(err);
+      throw new Error(err);
+    }
   };
 }

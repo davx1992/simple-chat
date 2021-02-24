@@ -1,16 +1,18 @@
-import { validate, ValidationError } from "class-validator";
-import { plainToClass } from "class-transformer";
-import { IncomingMessage, ServerResponse } from "http";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { validate, ValidationError } from 'class-validator';
+import { plainToClass } from 'class-transformer';
+import { IncomingMessage, ServerResponse } from 'http';
+import express from 'express';
 
 function validationFactory<T>(
-  metadataKey: Symbol,
-  model: { new (...args: any[]): T },
-  source: "body" | "query"
+  metadataKey: symbol,
+  model: T,
+  source: 'body' | 'query'
 ) {
   return function (
-    target: any,
+    target: unknown,
     propertyName: string,
-    descriptor: TypedPropertyDescriptor<Function>
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => unknown>
   ) {
     Reflect.defineMetadata(metadataKey, model, target, propertyName);
 
@@ -18,8 +20,12 @@ function validationFactory<T>(
     descriptor.value = async function (...args) {
       const model = Reflect.getOwnMetadata(metadataKey, target, propertyName);
 
-      const incomingMessage = args.find((a) => a instanceof IncomingMessage);
-      const res = args.find((a) => a instanceof ServerResponse);
+      const incomingMessage: IncomingMessage = args.find(
+        (a: unknown) => a instanceof IncomingMessage
+      );
+      const res: express.Response = args.find(
+        (a: unknown) => a instanceof ServerResponse
+      );
       const plain = incomingMessage[source];
 
       const errors = await validate(plainToClass(model, plain));
@@ -32,10 +38,24 @@ function validationFactory<T>(
   };
 }
 
-export const ValidateQuery = (dto) =>
-  validationFactory(Symbol("validate-query"), dto, "query");
-export const ValidateBody = (dto) =>
-  validationFactory(Symbol("validate-body"), dto, "body");
+export function ValidateQuery<T>(
+  dto: T
+): (
+  target: unknown,
+  propertyName: string,
+  descriptor: TypedPropertyDescriptor<(...args: any[]) => unknown>
+) => void {
+  return validationFactory<T>(Symbol('validate-query'), dto, 'query');
+}
+export function ValidateBody<T>(
+  dto: T
+): (
+  target: unknown,
+  propertyName: string,
+  descriptor: TypedPropertyDescriptor<(...args: any[]) => unknown>
+) => void {
+  return validationFactory<T>(Symbol('validate-body'), dto, 'body');
+}
 
 function transformValidationErrorsToJSON(errors: ValidationError[]) {
   return errors.reduce((p, c: ValidationError) => {

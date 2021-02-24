@@ -4,17 +4,11 @@ import {
   IsObject,
   IsString,
   ValidateIf,
-  ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 export enum ChatTypes {
-  SUC = "@suc",
-  MUC = "@muc",
-}
-
-class MessageBody {
-  @IsString()
-  text: string;
+  SUC = '@suc',
+  MUC = '@muc',
 }
 
 export interface ValidationError {
@@ -32,17 +26,17 @@ export class Message {
 
   @ValidateIf(
     (o) =>
-      typeof o.typing === "undefined" ||
-      (typeof o.typing !== "undefined" && typeof o.body !== "undefined")
+      typeof o.typing === 'undefined' ||
+      (typeof o.typing !== 'undefined' && typeof o.body !== 'undefined')
   )
   @IsObject()
   body?: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
   @ValidateIf(
     (o) =>
-      typeof o.body === "undefined" ||
-      (typeof o.typing !== "undefined" && typeof o.body !== "undefined")
+      typeof o.body === 'undefined' ||
+      (typeof o.typing !== 'undefined' && typeof o.body !== 'undefined')
   )
   @IsBoolean()
   typing?: boolean;
