@@ -90,7 +90,9 @@ In this case there is no need to leave chat and no need join again.
 Simple-Chat exposes basic actions in API. API is **not having** any authentication, hence should be used only in local network, and should not be exposed to public network.
 We recommend to use such setup:
 ![system_landscape](https://user-images.githubusercontent.com/2311893/109118405-f31dc880-774b-11eb-8e0b-34af64294d68.png)
-Below are the avalaible API enpoints:
+
+
+### Below are the avalaible API enpoints:
 
 ---
 
