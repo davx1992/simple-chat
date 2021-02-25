@@ -29,7 +29,7 @@ was to build lightweight simple chat message delivery system, which would be eas
 We used libraries which proved reliability, and we are sure that system will be stable.
 #### This chat server *is*:
 * Message delivery system
-#### Thic chat server is *not*:
+#### This chat server is *not*:
 * **Full** chat solution - it means that Simple-Chat is not handling authentication and authorization.
 Simple-Chat is relying on external API which is verifying AccessToken. Simple-Chat need external API to store users and chat related data.
 
@@ -37,7 +37,7 @@ Simple-Chat is relying on external API which is verifying AccessToken. Simple-Ch
 When message received user must to acknowledge the message, otherwise, message will be moved to offline message queue, and will be pushed on user reconnection.
 If user do not acknowlege message, however he is online, system captures timeout and also moves message to offline message queue.
 
-When this package were built we inspired from Ejabberd chat server, which is prooved its reliability, but it was heavy, and was hard to maintan and extend,
+When this package were built we inspired from Ejabberd chat server, which is proved it's reliability, but it was heavy, and was hard to maintain and extend,
 as it is written in Erlang, which is not the most popular language. As well as we wanted to get simple chat server, which will cover basic needs, which actaully Simple-Chat is covering.
 
 ## Tech Stack
