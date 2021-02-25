@@ -1,5 +1,5 @@
 # simple-chat
-Simple-Chat is Node.JS based Chat Server. Simple-Chat supports basic chat chat features. 
+Simple-Chat is Node.JS based Chat Server. Simple-Chat supports basic chat features. 
 [Simple-Chat-Client](https://github.com/davx1992/simple-chat-client) is package should could be used to connect to Simple-Chat server.
 
 ## Installation
