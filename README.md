@@ -1,6 +1,6 @@
 # simple-chat
 
-Simple-Chat is Node.JS based Chat Server. Simple-Chat supports basic chat chat features.
+Simple-Chat is Node.JS based Chat Server. Simple-Chat supports basic chat features.
 [Simple-Chat-Client](https://github.com/davx1992/simple-chat-client) is package should could be used to connect to Simple-Chat server.
 
 ## Installation
@@ -41,7 +41,7 @@ We used libraries which proved reliability, and we are sure that system will be 
 
 - Message delivery system
 
-#### Thic chat server is _not_:
+#### This chat server is _not_:
 
 - **Full** chat solution - it means that Simple-Chat is not handling authentication and authorization.
   Simple-Chat is relying on external API which is verifying AccessToken. Simple-Chat need external API to store users and chat related data.
@@ -50,7 +50,7 @@ We used libraries which proved reliability, and we are sure that system will be 
 When message received user must to acknowledge the message, otherwise, message will be moved to offline message queue, and will be pushed on user reconnection.
 If user do not acknowlege message, however he is online, system captures timeout and also moves message to offline message queue.
 
-When this package were built we inspired from Ejabberd chat server, which is prooved its reliability, but it was heavy, and was hard to maintan and extend,
+When this package were built we inspired from Ejabberd chat server, which is proved it's reliability, but it was heavy, and was hard to maintain and extend,
 as it is written in Erlang, which is not the most popular language. As well as we wanted to get simple chat server, which will cover basic needs, which actaully Simple-Chat is covering.
 
 ## Tech Stack
