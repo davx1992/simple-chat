@@ -1,8 +1,8 @@
 import {
+  AppError,
   ChatTypes,
   Message,
   Receipient,
-  ValidationError,
 } from '../../interfaces/messaging.interface';
 import { Socket } from 'socket.io';
 import { logger } from '../../constants/logger';
@@ -15,6 +15,7 @@ import axios from 'axios';
 import { AppConfig } from '../../interfaces/app.interface';
 import { r } from 'rethinkdb-ts';
 import moment from 'moment';
+import { ERRORS } from '../../constants/errors';
 
 @injectable()
 export default class MessagingService {
@@ -90,7 +91,7 @@ export default class MessagingService {
     chatId: string,
     limit: number,
     after: string = null,
-    callback: (messages?: Message[], error?: string) => void
+    callback: (messages?: Message[], error?: AppError) => void
   ): Promise<void> => {
     try {
       if (chatId && limit) {
@@ -101,11 +102,11 @@ export default class MessagingService {
         );
         callback(messages);
       } else {
-        callback(null, 'No chat Id or limit promvided.');
+        callback(null, { code: 3000, error: ERRORS[3000] });
       }
     } catch (error) {
-      callback(null, 'Error during archive fetch.');
-      logger.error(error.message);
+      callback(null, { code: 2002, error: ERRORS[2002] });
+      logger.error(error);
     }
   };
 
@@ -138,7 +139,7 @@ export default class MessagingService {
     socket: Socket,
     chatId: string,
     temp = false,
-    callback: (success: boolean, error?: string) => void
+    callback: (success: boolean, error?: AppError) => void
   ): Promise<void> => {
     try {
       const from: string = socket.handshake.auth['userId'];
@@ -147,11 +148,12 @@ export default class MessagingService {
         await this._messagingOperations.joinChat(chatId, from, temp);
         callback(true);
       } else {
-        logger.error('No chat Id provided.');
-        callback(false, 'No chat Id provided.');
+        logger.error(ERRORS[3000]);
+        callback(false, { code: 3000, error: ERRORS[3000] });
       }
     } catch (error) {
       logger.error(error);
+      callback(false, { code: 3000, error: ERRORS[3000] });
     }
   };
 
@@ -165,7 +167,7 @@ export default class MessagingService {
   onLeaveChat = async (
     socket: Socket,
     chatId: string,
-    callback: (success: boolean, error?: string) => void
+    callback: (success: boolean, error?: AppError) => void
   ): Promise<void> => {
     try {
       const from: string = socket.handshake.auth['userId'];
@@ -173,11 +175,12 @@ export default class MessagingService {
         await this._messagingOperations.leaveChat(chatId, from);
         callback(true);
       } else {
-        logger.error('No chat Id provided.');
-        callback(false, 'No chat Id provided.');
+        logger.error(ERRORS[3000]);
+        callback(false, { code: 3000, error: ERRORS[3000] });
       }
     } catch (error) {
       logger.error(error);
+      callback(false, { code: 3000, error: ERRORS[3000] });
     }
   };
 
@@ -192,7 +195,7 @@ export default class MessagingService {
     socket: Socket,
     type: ChatTypes,
     users: string[],
-    callback: (chatId?: string, error?: string) => void
+    callback: (chatId?: string, error?: AppError) => void
   ): Promise<void> => {
     try {
       const from: string = socket.handshake.auth['userId'];
@@ -201,13 +204,13 @@ export default class MessagingService {
           //Validate user list if it is having two people and one of them is sender
           const receipient = users.find((user) => user !== from);
           if (!receipient) {
-            logger.error('User list should contain creator and receipient');
-            callback(null, 'User list should contain creator and receipient');
+            logger.error(ERRORS[1000]);
+            callback(null, { code: 1000, error: ERRORS[1000] });
             return;
           }
         } else {
-          logger.error('Only two users should be provided for SUC chat');
-          callback(null, 'Only two users should be provided for SUC chat');
+          logger.error(ERRORS[1001]);
+          callback(null, { code: 1001, error: ERRORS[1001] });
           return;
         }
 
@@ -238,7 +241,7 @@ export default class MessagingService {
       callback(chatId);
     } catch (err) {
       logger.error(err);
-      callback(null, err);
+      callback(null, { code: 2001, error: ERRORS[2001] });
     }
   };
 
@@ -286,7 +289,7 @@ export default class MessagingService {
   onMessage = async (
     socket: Socket,
     message: Message,
-    callback: (messageId?: string, error?: ValidationError[]) => void
+    callback: (messageId?: string, error?: AppError) => void
   ): Promise<void> => {
     try {
       console.time('message handler');
@@ -297,13 +300,11 @@ export default class MessagingService {
 
       //If errors during validation return errors and do not proceed further.
       if (errors.length > 0) {
-        const error = errors.map((err) => {
-          return {
-            field: err.property,
-            error: JSON.stringify(err.constraints),
-          };
-        });
-        logger.error('validation failed. errors: ' + JSON.stringify(error));
+        const error = {
+          code: 2000,
+          error: ERRORS[2000],
+        };
+        logger.error(JSON.stringify(error));
         callback(null, error);
         return;
       }
@@ -314,11 +315,20 @@ export default class MessagingService {
       //If chat do not exist then throw an error. Chat should exist when sending message
       if (!chat) {
         const error = {
-          field: 'to',
-          error: 'Chat do not exist, please create new chat.',
+          code: 4004,
+          error: ERRORS[4004],
         };
         logger.error(JSON.stringify(error));
-        callback(null, [error]);
+        callback(null, error);
+        return;
+      }
+
+      //If chat is blocked do not send message, and return an error
+      if (chat.blocked) {
+        callback(null, {
+          code: 4003,
+          error: ERRORS[4003],
+        });
         return;
       }
 
@@ -432,8 +442,8 @@ export default class MessagingService {
       onlyTyping ? callback() : callback(messageToSend.id);
       console.timeEnd('message handler');
     } catch (error) {
-      callback(null, [error]);
-      logger.error(error);
+      callback(null, { code: 2000, error: ERRORS[2000] });
+      logger.error(JSON.stringify(error));
     }
   };
 

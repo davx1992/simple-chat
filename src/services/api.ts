@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import SERVICE_IDENTIFIER from '../constants/identifiers';
 import {
+  BlockChatDTO,
   JoinChatDTO,
   LeaveChatDTO,
   NewChatDTO,
@@ -9,6 +10,7 @@ import {
 import { ChatTypes } from '../interfaces/messaging.interface';
 import { MessagingOperations } from './messaging/operations';
 import moment from 'moment';
+import { logger } from '../constants/logger';
 
 @injectable()
 export class ApiService {
@@ -59,6 +61,30 @@ export class ApiService {
       joinChatDto.userId,
       joinChatDto.temp
     );
+  }
+
+  /**
+   * Join to chat, create chat user record
+   *
+   * @param joinChat join chat param object - userId, chatId, temp flag
+   */
+  async blockChat(blockChatDto: BlockChatDTO): Promise<void> {
+    const chat = await this._messagingOperations.loadChatById(
+      blockChatDto.chatId
+    );
+
+    if (chat?.type !== ChatTypes.SUC) {
+      logger.error('Only SUC chat could be blocked.');
+      throw new Error('Only SUC chat could be blocked.');
+    }
+
+    if (chat.users?.includes(blockChatDto.userId)) {
+      const { chatId, userId, block } = blockChatDto;
+      return this._messagingOperations.blockChat(chatId, userId, block);
+    } else {
+      logger.error('User is not an chat participant.');
+      throw new Error('User is not an chat participant.');
+    }
   }
 
   /**

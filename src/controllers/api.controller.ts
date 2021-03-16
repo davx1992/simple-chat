@@ -9,6 +9,7 @@ import {
 import * as express from 'express';
 import { ValidateBody, ValidateQuery } from '../decorators/validate.decorator';
 import {
+  BlockChatDTO,
   DeleteChatsDTO,
   JoinChatDTO,
   LeaveChatDTO,
@@ -74,7 +75,7 @@ export default class ApiController {
       const chatId = await this._apiService.createChat(newChat);
       res.status(200).send(chatId);
     } catch (err) {
-      res.status(500).json({ error: err });
+      res.status(500).json({ error: err.message });
     }
   }
 
@@ -101,7 +102,7 @@ export default class ApiController {
       await this._apiService.joinChat(joinChat);
       res.status(200).send();
     } catch (err) {
-      res.status(500).json({ error: err });
+      res.status(500).json({ error: err.message });
     }
   }
 
@@ -127,7 +128,7 @@ export default class ApiController {
       await this._apiService.leaveChat(leaveChat);
       res.status(200).send();
     } catch (err) {
-      res.status(500).json({ error: err });
+      res.status(500).json({ error: err.message });
     }
   }
 
@@ -150,7 +151,7 @@ export default class ApiController {
     try {
       return this._apiService.loadInactiveChats(old, timeEntity);
     } catch (err) {
-      res.status(500).json({ error: err });
+      res.status(500).json({ error: err.message });
     }
   }
 
@@ -165,7 +166,22 @@ export default class ApiController {
       await this._apiService.deleteChats(deleteChats.chatIds);
       res.status(200).send();
     } catch (err) {
-      res.status(500).json({ error: err });
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  @httpPost('/chat/block')
+  @ValidateBody(BlockChatDTO)
+  private async blockChat(
+    @request() req: express.Request,
+    @response() res: express.Response
+  ): Promise<void> {
+    try {
+      const blockChat: BlockChatDTO = req.body;
+      await this._apiService.blockChat(blockChat);
+      res.status(200).send();
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
   }
 }

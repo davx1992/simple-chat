@@ -351,7 +351,7 @@ export class MessagingOperations {
   };
 
   /**
-   * Join to chat
+   * Leave chat
    *
    * @param chatId id of chat to which user wants to join
    * @param userId id of user which is joining the chat
@@ -367,6 +367,51 @@ export class MessagingOperations {
         })
         .delete()
         .run(conn);
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
+  /**
+   * Block suc chat. If both users blocked chat, then chat will stay blocked until
+   * both users unblock it
+   *∂
+   * @param chatId id of chat to which user wants to join
+   * @param userId id of user which is joining the chat
+   * @param block action to block or unblock
+   */
+  blockChat = async (
+    chatId: string,
+    userId: string,
+    block: boolean
+  ): Promise<void> => {
+    try {
+      const chat = await r.table('chat').get(chatId).run(conn);
+      if (block) {
+        if (chat.blockedBy?.length > 0 && chat.blockedBy?.includes(userId)) {
+          await r
+            .table('chat')
+            .get(chatId)
+            .update({ blocked: block })
+            .run(conn);
+        } else {
+          await r
+            .table('chat')
+            .get(chatId)
+            .update({
+              blocked: block,
+              blockedBy: [...(chat.blockedBy ?? []), userId],
+            })
+            .run(conn);
+        }
+      } else {
+        const blockedBy = chat.blockedBy;
+        const i = blockedBy.findIndex((b) => b === userId);
+        blockedBy.splice(i, 1);
+        const blocked = !block && blockedBy.length !== 0;
+
+        r.table('chat').get(chatId).update({ blocked, blockedBy }).run(conn);
+      }
     } catch (err) {
       throw new Error(err);
     }

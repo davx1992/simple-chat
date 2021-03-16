@@ -11,8 +11,8 @@ export enum ChatTypes {
   MUC = '@muc',
 }
 
-export interface ValidationError {
-  field: string;
+export interface AppError {
+  code: number;
   error: string;
 }
 
@@ -58,6 +58,8 @@ export interface Chat {
   created: string;
   users?: string[];
   type: ChatTypes;
+  blocked?: boolean;
+  blockedBy?: string[];
 }
 
 export interface ChatUser {

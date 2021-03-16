@@ -1,13 +1,14 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNumber,
   IsOptional,
   IsString,
   ValidateIf,
-} from "class-validator";
-import { ChatTypes } from "./messaging.interface";
+} from 'class-validator';
+import { ChatTypes } from './messaging.interface';
 
 export class NewChatDTO {
   @IsString()
@@ -31,6 +32,15 @@ export class JoinChatDTO {
   temp: boolean;
 }
 
+export class BlockChatDTO {
+  @IsString()
+  chatId: string;
+  @IsString()
+  userId: string;
+  @IsBoolean()
+  block: boolean;
+}
+
 export class LeaveChatDTO {
   @IsString()
   chatId: string;
@@ -44,12 +54,12 @@ export class DeleteChatsDTO {
 }
 
 export enum TimeEntity {
-  DAYS = "days",
-  HOURS = "hours",
-  MINUTES = "minutes",
-  SECONDS = "seconds",
-  WEEKS = "weeks",
-  MONTHS = "months",
+  DAYS = 'days',
+  HOURS = 'hours',
+  MINUTES = 'minutes',
+  SECONDS = 'seconds',
+  WEEKS = 'weeks',
+  MONTHS = 'months',
 }
 
 export class LoadInactiveChatListDTO {
