@@ -10,7 +10,7 @@ import { now } from 'lodash';
 import moment from 'moment';
 import { injectable } from 'inversify';
 import { logger } from '../../constants/logger';
-import { conn } from '../app';
+import { conn } from '../app.service';
 import { JoinResult, r } from 'rethinkdb-ts';
 import { User } from '../../interfaces/authentication.interface';
 
@@ -179,7 +179,7 @@ export class MessagingOperations {
         .table('chat')
         .insert(
           {
-            type: type,
+            type,
             timestamp: now(),
             created: moment.utc().toDate(),
             creator,
@@ -203,8 +203,12 @@ export class MessagingOperations {
    * then chat will be considered as inactive.
    *
    * @param timestamp from which time to consider chat as inactive  - from timestamp
+   * @param chatType type of chat of which to search inactive chats
    */
-  loadInactiveChats = async (timestamp: number): Promise<string[]> => {
+  loadInactiveChats = async (
+    timestamp: number,
+    chatType: ChatTypes
+  ): Promise<string[]> => {
     try {
       const chatIds = await r
         .table('chat')
@@ -217,7 +221,8 @@ export class MessagingOperations {
                 index: 'to_timestamp',
               })
               .isEmpty(),
-            chat('timestamp').le(timestamp)
+            chat('timestamp').le(timestamp),
+            chat('type').eq(chatType)
           );
         })('id')
         .coerceTo('array')

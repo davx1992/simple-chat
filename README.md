@@ -193,11 +193,12 @@ Used to load chats which had no messages for provided period and considered as i
 
 - **old (_number_)** -- how long time chat had no messages.
 - **entity (_string_)** -- time entity how to measure old chats. Avaliable values - days, hours, minutes, seconds, weeks, months.
+- **type (_ChatTypes_)** -- what type of chat to search - @muc or @suc.
 
 Example if it is needed to load chats which had no messages for more than one day:
 
 ```typescript
-GET /api/chat/inactive?old=1&entity=days
+GET /api/chat/inactive?old=1&entity=days&type@muc
 ```
 
 #### Result

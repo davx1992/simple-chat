@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import SERVICE_IDENTIFIER from './constants/identifiers';
-import AppService from './services/app';
-import MessagingService from './services/messaging/messaging';
-import AuthenticationService from './services/authentication';
-import { MessagingOperations } from './services/messaging/operations';
-import { ApiService } from './services/api';
+import AppService from './services/app.service';
+import MessagingService from './services/messaging/messaging.service';
+import AuthenticationService from './services/authentication.service';
+import { MessagingOperations } from './services/messaging/messaging.operations';
+import { ApiService } from './services/api.service';
 
 const container = new Container();
 

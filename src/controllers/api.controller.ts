@@ -21,7 +21,7 @@ import SERVICE_IDENTIFIER from '../constants/identifiers';
 import { inject } from 'inversify';
 import { ChatTypes } from '../interfaces/messaging.interface';
 import { logger } from '../constants/logger';
-import { ApiService } from '../services/api';
+import { ApiService } from '../services/api.service';
 
 @controller('/api')
 export default class ApiController {
@@ -146,10 +146,11 @@ export default class ApiController {
   private async loadInactiveChats(
     @queryParam('old') old: number,
     @queryParam('entity') timeEntity: TimeEntity,
+    @queryParam('type') type: ChatTypes,
     @response() res: express.Response
   ): Promise<string[]> {
     try {
-      return this._apiService.loadInactiveChats(old, timeEntity);
+      return this._apiService.loadInactiveChats(old, timeEntity, type);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

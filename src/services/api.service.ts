@@ -8,7 +8,7 @@ import {
   TimeEntity,
 } from '../interfaces/api.interface';
 import { ChatTypes } from '../interfaces/messaging.interface';
-import { MessagingOperations } from './messaging/operations';
+import { MessagingOperations } from './messaging/messaging.operations';
 import moment from 'moment';
 import { logger } from '../constants/logger';
 
@@ -109,7 +109,8 @@ export class ApiService {
    */
   async loadInactiveChats(
     old: number,
-    timeEntity: TimeEntity
+    timeEntity: TimeEntity,
+    type: ChatTypes
   ): Promise<string[]> {
     const fromTimestamp = moment()
       .subtract(old, timeEntity)
@@ -117,7 +118,7 @@ export class ApiService {
       .toDate()
       .getTime();
 
-    return this._messagingOperations.loadInactiveChats(fromTimestamp);
+    return this._messagingOperations.loadInactiveChats(fromTimestamp, type);
   }
 
   /**

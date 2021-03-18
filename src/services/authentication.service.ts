@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { Socket } from 'socket.io';
 import axios from 'axios';
 import { logger } from '../constants/logger';
-import { io } from './app';
+import { io } from './app.service';
 
 @injectable()
 export default class AuthenticationService {

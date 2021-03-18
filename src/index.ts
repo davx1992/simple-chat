@@ -1,6 +1,6 @@
 import SERVICE_IDENTIFIER from './constants/identifiers';
 import container from './container';
-import AppService from './services/app';
+import AppService from './services/app.service';
 
 const app = container.get<AppService>(SERVICE_IDENTIFIER.APP);
 

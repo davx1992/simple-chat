@@ -68,4 +68,6 @@ export class LoadInactiveChatListDTO {
   old: number;
   @IsEnum(TimeEntity)
   entity: TimeEntity;
+  @IsEnum(ChatTypes)
+  type: ChatTypes;
 }

@@ -7,9 +7,9 @@ import {
 import { Socket } from 'socket.io';
 import { logger } from '../../constants/logger';
 import { inject, injectable } from 'inversify';
-import { conn, io } from '../app';
+import { conn, io } from '../app.service';
 import { validate } from 'class-validator';
-import { MessagingOperations } from './operations';
+import { MessagingOperations } from './messaging.operations';
 import SERVICE_IDENTIFIER from '../../constants/identifiers';
 import axios from 'axios';
 import { AppConfig } from '../../interfaces/app.interface';
